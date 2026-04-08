@@ -1,9 +1,12 @@
 name: Publish to PyPI
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   build-and-publish:
@@ -19,13 +22,12 @@ jobs:
           python-version: "3.12"
 
       - name: Install build tools
-        run: pip install build twine
+        run: pip install build
 
       - name: Build package
         run: python -m build
 
       - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: "__token__"
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
