@@ -6,13 +6,16 @@ from . import config
 from . import colormap
 from . import mchelpers
 
-# Re-export classes
+# Re-export classes from the new servers/ folder
+from .servers._generic import GenericServer
+from .servers.minecraft import MinecraftServer
+
+# Re-export Panel
 from .panel import Panel
-from .servers import GenericServer, MinecraftServer
 
 # Re-export selected functions
 try:
-    from .utils import checklag
+    from .utils import checkLag
 except ImportError:
     pass
 
