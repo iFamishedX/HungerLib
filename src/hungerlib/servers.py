@@ -1,8 +1,8 @@
 import time
 import re
 import mcrcon
-from panel import Panel
-from config import Config
+from hungerlib.panel import Panel
+from hungerlib.config import Config
 
 
 class GenericServer:
