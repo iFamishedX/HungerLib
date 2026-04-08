@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hungerlib"
+version = "0.1.0"
+description = "Automation SDK for HungerNet Minecraft servers"
+authors = [
+    { name="Eric Miller" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+dependencies = [
+    "requests",
+    "mcrcon",
+]
+
+[project.urls]
+Homepage = "https://github.com/ifamished/hungerlib"
+Source = "https://github.com/ifamished/hungerlib"
+Issues = "https://github.com/ifamished/hungerlib/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
