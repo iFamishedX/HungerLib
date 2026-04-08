@@ -19,11 +19,11 @@ class HungerLogger:
         logDir=None,
         server=None
     ):
-    '''
-    HungerLib's core logger
-    Uses hungerlib.config for the Config system.
-    If no Config class is defined, DefaultConfig is used.
-    '''
+        '''
+        HungerLib's core logger
+        Uses hungerlib.config for the Config system.
+        If no Config class is defined, DefaultConfig is used.
+        '''
         self.loggerName = loggerName
         self.config = Config
         self.server = server
