@@ -4,24 +4,52 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hungerlib"
-version = "0.1.0"
-description = "Automation SDK for HungerNet Minecraft servers"
-authors = [
-    { name="Eric Miller" }
-]
+dynamic = ["version"]
+description = "Powerful automation library for Pterodactyl."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
+
+authors = [
+    { name = "iFamished" }
+]
+
+keywords = [
+    "pterodactyl",
+    "minecraft",
+    "automation",
+    "rcon",
+    "server-management",
+    "hungerlib",
+    "hungernet"
+]
 
 dependencies = [
     "requests",
     "mcrcon",
 ]
 
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Systems Administration",
+]
+
 [project.urls]
-Homepage = "https://github.com/ifamished/hungerlib"
-Source = "https://github.com/ifamished/hungerlib"
-Issues = "https://github.com/ifamished/hungerlib/issues"
+Homepage = "https://github.com/iFamishedX/HungerLib"
+Documentation = "https://github.com/iFamishedX/HungerLib"
+Source = "https://github.com/iFamishedX/HungerLib"
+Issues = "https://github.com/iFamishedX/HungerLib/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "hungerlib._version.__version__" }
