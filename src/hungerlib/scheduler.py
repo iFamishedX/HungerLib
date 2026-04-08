@@ -1,3 +1,4 @@
+# HungerLib's simple snap scheduler
 import time
 from datetime import datetime, timedelta
 

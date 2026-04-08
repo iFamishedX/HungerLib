@@ -1,17 +1,11 @@
-# mchelpers.py
 # Minecraft-specific helper functions that operate on a MinecraftServer instance.
-# These are NOT part of the server abstraction layer and do not belong in servers.py.
 
 class MCHelpers:
     def __init__(self, server):
         """
-        server: MinecraftServer instance
+        Helper utilities for a MinecraftServer instance.
         """
         self.server = server
-
-    # ============================================================
-    # BASIC COMMAND HELPERS
-    # ============================================================
 
     def run(self, command):
         """Send a raw RCON command."""
@@ -24,10 +18,6 @@ class MCHelpers:
         cmd = f'tellraw {target} {{"text":"{safe}"}}'
         return self.run(cmd)
 
-    # ============================================================
-    # PLAYER MANAGEMENT
-    # ============================================================
-
     def kick(self, player, message="Kicked"):
         safe = message.replace('"', '\\"')
         return self.run(f'kick {player} "{safe}"')
@@ -35,10 +25,6 @@ class MCHelpers:
     def kickAll(self, message="Server restarting"):
         safe = message.replace('"', '\\"')
         return self.run(f'kick @a "{safe}"')
-
-    # ============================================================
-    # WHITELIST MANAGEMENT
-    # ============================================================
 
     def whitelistAdd(self, player):
         return self.run(f"whitelist add {player}")
@@ -48,10 +34,6 @@ class MCHelpers:
 
     def whitelistList(self):
         return self.run("whitelist list")
-
-    # ============================================================
-    # DATAPACK & FUNCTION HELPERS
-    # ============================================================
 
     def runFunction(self, function_name):
         """Run a datapack function."""

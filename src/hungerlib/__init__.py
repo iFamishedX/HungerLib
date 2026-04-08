@@ -16,7 +16,7 @@ try:
 except ImportError:
     pass
 
-# Version (optional)
+# Version
 try:
     from ._version import __version__
 except ImportError:

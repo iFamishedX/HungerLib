@@ -1,3 +1,4 @@
+# Server classes
 import time
 import re
 import mcrcon
@@ -17,6 +18,7 @@ class GenericServer:
         rcon_password,
         Config: Config
     ):
+    '''A universal server class'''
         self.name = name
         self.panel = panel
         self.server_id = server_id
@@ -239,9 +241,6 @@ class GenericServer:
         }
 
 
-# ============================================================
-# MINECRAFT SERVER
-# ============================================================
 
 class MinecraftServer(GenericServer):
     def __init__(
@@ -256,6 +255,10 @@ class MinecraftServer(GenericServer):
         rcon_password=None,
         tpsCommand='ticks'
     ):
+    '''
+    A highly configurable server class for Minecraft servers.
+    Supports Rcon.
+    '''
         super().__init__(
             name,
             panel,
@@ -269,7 +272,7 @@ class MinecraftServer(GenericServer):
         self.tpsCommand = tpsCommand
 
     # ============================================================
-    # FIXED RCON HANDLER (flushes both packets)
+    # RCON HANDLER
     # ============================================================
 
     def _rcon_send(self, command):
@@ -295,18 +298,19 @@ class MinecraftServer(GenericServer):
         return int(m.group(1)) if m else None
 
     # ============================================================
-    # TPS PARSER (color‑safe, packet‑safe)
+    # TPS PARSER
     # ============================================================
 
     def getTPS(self, type="raw", rounding=10):
+        '''
+        This has limitations and is not yet complete. It currently ONLY parses TT20's tps command.
+        Example: /tt20 tps
+        This parser WILL NOT WORK with other configurations!
+        '''
         output = self._rcon_send(self.tpsCommand)
         if not output:
             return None
-
-        # Strip Minecraft color codes (§a, §7, etc)
         clean = re.sub(r"§.", "", output)
-
-        # Match: TPS 20.00 with average 19.96 accurate 19.96
         m = re.search(
             r"TPS\s+([0-9]+\.[0-9]+)\s+with average\s+([0-9]+\.[0-9]+)\s+accurate\s+([0-9]+\.[0-9]+)",
             clean

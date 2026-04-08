@@ -1,3 +1,5 @@
+# Environment-based color translation and mapping
+
 MC_COLOR_MAP = {
     "<black>": "§0",
     "<dark_blue>": "§1",

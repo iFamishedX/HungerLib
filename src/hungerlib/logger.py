@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+# Logging system
+
 import os
 os.environ['TZ'] = 'America/Chicago'
 import time
@@ -18,6 +19,11 @@ class HungerLogger:
         logDir=None,
         server=None
     ):
+    '''
+    HungerLib's core logger
+    Uses hungerlib.config for the Config system.
+    If no Config class is defined, DefaultConfig is used.
+    '''
         self.loggerName = loggerName
         self.config = Config
         self.server = server
@@ -96,10 +102,13 @@ class HungerLogger:
             }[level](clean)
 
     def info(self, msg, destination=False, origin=True, logs=True):
+        '''Log to the INFO channel'''
         self._log("INFO", msg, destination, origin, logs)
 
     def warn(self, msg, destination=False, origin=True, logs=True):
+        '''Log to the WARN channel'''
         self._log("WARN", msg, destination, origin, logs)
 
     def error(self, msg, destination=False, origin=True, logs=True):
+        '''Log to the ERROR channel'''
         self._log("ERROR", msg, destination, origin, logs)

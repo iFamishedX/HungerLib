@@ -1,11 +1,12 @@
+# The Panel class and it's methods
 import requests
-
 
 class Panel:
     def __init__(self, name, url, api_key):
         self.name = name
         self.url = url.rstrip("/")
         self.api_key = api_key
+    '''The class that initiates the Panel'''
 
     def __str__(self):
         return f'Panel name: {self.name}\nURL: {self.url}\nAPI key: {self.api_key}'
@@ -33,10 +34,8 @@ class Panel:
     def patch(self, path, json=None, timeout=5):
         return requests.patch(f"{self.url}{path}", headers=self.headers, json=json, timeout=timeout)
 
-    # -----------------------------
-    # PANEL STATUS
-    # -----------------------------
     def ping(self):
+        '''Attempts to ping the panel'''
         try:
             r = self.get("/api/client")
             return r.status_code == 200
@@ -44,6 +43,7 @@ class Panel:
             return False
 
     def validateAPI(self):
+        '''Ensures the provided API token is valid'''
         r = self.get("/api/client/account")
         return r.status_code == 200
 

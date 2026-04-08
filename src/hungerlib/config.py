@@ -1,3 +1,5 @@
+# HungerLib's core config system
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from hungerlib.colormap import *

@@ -1,19 +1,11 @@
 import time
 
-
-# utils.py
-# Generic helper functions that operate on server objects.
-# No server-specific or Minecraft-specific logic belongs here.
-
-
-# ============================================================
-# LAG CHECKER
-# ============================================================
+# Special use case helper functions that operate on server objects
 
 def checkLag(server, ram, cpu, nwi, nwo, tps, logger=None):
     """
     Check if the server is under load based on thresholds.
-    Returns True if lag is detected.
+    Returns True if lag is detected as well as logs the reason, if a logger is defined.
     """
     reasons = []
 
@@ -43,11 +35,6 @@ def checkLag(server, ram, cpu, nwi, nwo, tps, logger=None):
         logger.info("No lag detected.")
     return False
 
-
-# ============================================================
-# VALIDATION
-# ============================================================
-
 def validateAll(panel, server):
     """
     Validate panel connectivity, API access, and server running state.
@@ -57,15 +44,6 @@ def validateAll(panel, server):
         panel.validateAPI() is True and
         server.getStatus() == "running"
     )
-
-
-# ============================================================
-# TIME HELPERS
-# ============================================================
-
-def minify(seconds):
-    """Convert seconds to minutes."""
-    return seconds // 60
 
 
 # ============================================================
