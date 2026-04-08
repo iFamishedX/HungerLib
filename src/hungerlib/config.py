@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from colormap import *
+from hungerlib.colormap import *
 
 @dataclass
 class Config:
