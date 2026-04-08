@@ -18,7 +18,7 @@ class GenericServer:
         rcon_password,
         Config: Config
     ):
-    '''A universal server class'''
+        '''A universal server class'''
         self.name = name
         self.panel = panel
         self.server_id = server_id
@@ -255,10 +255,10 @@ class MinecraftServer(GenericServer):
         rcon_password=None,
         tpsCommand='ticks'
     ):
-    '''
-    A highly configurable server class for Minecraft servers.
-    Supports Rcon.
-    '''
+        '''
+        A highly configurable server class for Minecraft servers.
+        Supports Rcon.
+        '''
         super().__init__(
             name,
             panel,
