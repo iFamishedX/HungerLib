@@ -1,4 +1,4 @@
 run: true
-version: "1.2.1-beta"
+version: "1.2.2-beta"
 description: |
-  - Fixed misimport "minsuntil" to "minsUntil"
+  - Removed hard-coded logging in scheduler.py and logger.py

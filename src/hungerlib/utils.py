@@ -2,10 +2,10 @@ import time
 
 # Special use case helper functions that operate on server objects
 
-def checkLag(server, ram, cpu, nwi, nwo, tps, logger=None):
+def checkLag(server, ram, cpu, nwi, nwo, tps):
     """
-    Check if the server is under load based on thresholds.
-    Returns True if lag is detected as well as logs the reason, if a logger is defined.
+    Pure lag check.
+    Returns a tuple: (lag_detected: bool, reasons: list[str])
     """
     reasons = []
 
@@ -26,14 +26,8 @@ def checkLag(server, ram, cpu, nwi, nwo, tps, logger=None):
     if currentTPS is not None and currentTPS <= tps:
         reasons.append(f"TPS: {currentTPS}")
 
-    if reasons:
-        if logger:
-            logger.warn(f"Lag detected: {', '.join(reasons)}")
-        return True
+    return (len(reasons) > 0, reasons)
 
-    if logger:
-        logger.info("No lag detected.")
-    return False
 
 def validateAll(panel, server):
     """
