@@ -3,6 +3,7 @@ from .filemanager import FileManagerAPI
 from .backups import BackupsAPI
 from .databases import DatabasesAPI
 from .startup import StartupAPI
+from .command import CommandAPI
 
 __all__ = [
     "ScheduleAPI",
@@ -10,4 +11,5 @@ __all__ = [
     "BackupsAPI",
     "DatabasesAPI",
     "StartupAPI",
+    "CommandAPI",
 ]

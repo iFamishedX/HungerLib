@@ -94,7 +94,7 @@ class MinecraftServer(GenericServer):
     # ============================================================
 
     def sendConsoleCommand(self, command):
-        return self.panel.sendCommand(self.server_id, command)
+        return self.panel.commands.send(self.server_id, command)
 
     def sendBroadcast(self, message):
         translated = self._translate_mc_colors(message)

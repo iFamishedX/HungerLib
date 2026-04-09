@@ -28,6 +28,7 @@ class Panel:
         self.backups = BackupsAPI(self)
         self.databases = DatabasesAPI(self)
         self.startup = StartupAPI(self)
+        self.commands = CommandAPI(self)
 
     def __str__(self):
         return f"Panel name: {self.name}\nURL: {self.url}\nAPI key: {self.api_key}"
