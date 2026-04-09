@@ -135,95 +135,95 @@ class GenericServer:
     # ============================================================
 
     def listFiles(self, directory="/"):
-        return self.panel.fm_list(self.server_id, directory)
+        return self.panel.files.list(self.server_id, directory)
 
     def downloadFile(self, path):
-        return self.panel.fm_download(self.server_id, path)
+        return self.panel.files.download(self.server_id, path)
 
     def uploadFile(self, directory, file_data):
-        return self.panel.fm_upload(self.server_id, directory, file_data)
+        return self.panel.files.upload(self.server_id, directory, file_data)
 
     def deleteFiles(self, root, files):
-        return self.panel.fm_delete(self.server_id, root, files)
+        return self.panel.files.delete(self.server_id, root, files)
 
     def renameFiles(self, root, files):
-        return self.panel.fm_rename(self.server_id, root, files)
+        return self.panel.files.rename(self.server_id, root, files)
 
     def copyFiles(self, root, files):
-        return self.panel.fm_copy(self.server_id, root, files)
+        return self.panel.files.copy(self.server_id, root, files)
 
     def moveFiles(self, root, files):
-        return self.panel.fm_move(self.server_id, root, files)
+        return self.panel.files.move(self.server_id, root, files)
 
     def createFolder(self, directory, name):
-        return self.panel.fm_create_folder(self.server_id, directory, name)
+        return self.panel.files.create_folder(self.server_id, directory, name)
 
     def compress(self, root, files):
-        return self.panel.fm_compress(self.server_id, root, files)
+        return self.panel.files.compress(self.server_id, root, files)
 
     def decompress(self, file_path):
-        return self.panel.fm_decompress(self.server_id, file_path)
+        return self.panel.files.decompress(self.server_id, file_path)
 
     # ============================================================
     # BACKUPS
     # ============================================================
 
     def listBackups(self):
-        return self.panel.backups_list(self.server_id)
+        return self.panel.backups.list(self.server_id)
 
     def createBackup(self, name="Auto Backup"):
-        return self.panel.backups_create(self.server_id, name)
+        return self.panel.backups.create(self.server_id, name)
 
     def deleteBackup(self, backup_id):
-        return self.panel.backups_delete(self.server_id, backup_id)
+        return self.panel.backups.delete(self.server_id, backup_id)
 
     def downloadBackup(self, backup_id):
-        return self.panel.backups_download(self.server_id, backup_id)
+        return self.panel.backups.download(self.server_id, backup_id)
 
     # ============================================================
     # DATABASES
     # ============================================================
 
     def listDatabases(self):
-        return self.panel.db_list(self.server_id)
+        return self.panel.databases.list(self.server_id)
 
     def createDatabase(self, name, remote="%", host=None):
-        return self.panel.db_create(self.server_id, name, remote, host)
+        return self.panel.databases.create(self.server_id, name, remote, host)
 
     def rotateDatabasePassword(self, db_id):
-        return self.panel.db_rotate_password(self.server_id, db_id)
+        return self.panel.databases.rotate_password(self.server_id, db_id)
 
     def deleteDatabase(self, db_id):
-        return self.panel.db_delete(self.server_id, db_id)
+        return self.panel.databases.delete(self.server_id, db_id)
 
     # ============================================================
     # STARTUP VARIABLES
     # ============================================================
 
     def getStartupVariables(self):
-        return self.panel.startup_list(self.server_id)
+        return self.panel.startup.list(self.server_id)
 
     def updateStartupVariable(self, key, value):
-        return self.panel.startup_update(self.server_id, key, value)
+        return self.panel.startup.update(self.server_id, key, value)
 
     # ============================================================
     # SCHEDULES
     # ============================================================
 
     def listSchedules(self):
-        return self.panel.schedules_list(self.server_id)
+        return self.panel.schedules.list(self.server_id)
 
     def createSchedule(self, payload):
-        return self.panel.schedules_create(self.server_id, payload)
+        return self.panel.schedules.create(self.server_id, payload)
 
     def updateSchedule(self, schedule_id, payload):
-        return self.panel.schedules_update(self.server_id, schedule_id, payload)
+        return self.panel.schedules.update(self.server_id, schedule_id, payload)
 
     def deleteSchedule(self, schedule_id):
-        return self.panel.schedules_delete(self.server_id, schedule_id)
+        return self.panel.schedules.delete(self.server_id, schedule_id)
 
     def runSchedule(self, schedule_id):
-        return self.panel.schedules_run(self.server_id, schedule_id)
+        return self.panel.schedules.run(self.server_id, schedule_id)
 
     # ============================================================
     # HEALTH SNAPSHOT
