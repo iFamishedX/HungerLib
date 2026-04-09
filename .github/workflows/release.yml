@@ -13,10 +13,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: HungerLib
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +24,7 @@ jobs:
 
       - name: Parse version.yaml
         id: version
+        working-directory: .
         run: |
           RUN=$(yq '.run' version.yaml)
           VERSION=$(yq '.version' version.yaml)
@@ -76,6 +73,7 @@ jobs:
 
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
+        working-directory: .
         run: |
           toml set --toml-path pyproject.toml project.version "${{ env.VERSION }}" > pyproject.new
           mv pyproject.new pyproject.toml
@@ -83,6 +81,7 @@ jobs:
       - name: Generate changelog
         if: env.RUN == 'true'
         id: changelog
+        working-directory: .
         run: |
           VERSION="${{ env.VERSION }}"
 
@@ -99,6 +98,7 @@ jobs:
 
       - name: Merge description + changelog
         if: env.RUN == 'true'
+        working-directory: .
         run: |
           if [ -z "${{ env.DESC }}" ]; then
             FINAL="${{ env.CHANGELOG }}"
@@ -124,6 +124,7 @@ jobs:
 
       - name: Build package
         if: env.RUN == 'true'
+        working-directory: .
         run: python -m build
 
       - name: Create GitHub Release
@@ -145,6 +146,7 @@ jobs:
 
       - name: Auto-reset version.yaml
         if: env.RUN == 'true'
+        working-directory: .
         run: |
           yq -i '.run = false | .description = ""' version.yaml
           git config user.name "github-actions"
