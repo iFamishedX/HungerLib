@@ -16,6 +16,14 @@ _EXPORTS = {
     "logger": ("logger", None),
     "scheduler": ('scheduler', None),
 
+    # core module utilities
+    "Panel": ('panel', 'Panel'),
+    'DefaultConfig': ('config', 'DefaultConfig'),
+    'HungerLogger': ('logger', 'HungerLogger')
+    "snapSchedule": ("scheduler", "snapSchedule"),
+    "secsUntil": ("scheduler", "secsUntil"),
+    "minsUntil": ("scheduler", "minsUntil"),
+
     # servers
     "GenericServer": ("servers._generic", "GenericServer"),
     "MinecraftServer": ("servers.minecraft", "MinecraftServer"),
@@ -25,7 +33,7 @@ _EXPORTS = {
     "minecraftAddons": ("addons.minecraft", None),
     "colormap": ("addons.colormap", None),
 
-    # addon functions
+    # addon utilities
     "runCountdownEvents": ("addons._generic", "runCountdownEvents"),
     "validateAll": ("addons._generic", "validateAll"),
     "waitForOnline": ("addons._generic", "waitForOnline"),
@@ -39,12 +47,7 @@ _EXPORTS = {
     "FileManagerAPI": ("api.filemanager", "FileManagerAPI"),
     "BackupsAPI": ("api.backups", "BackupsAPI"),
     "DatabasesAPI": ("api.databases", "DatabasesAPI"),
-    "StartupAPI": ("api.startup", "StartupAPI"),
-    
-    # scheduler utilities
-    "snapSchedule": ("scheduler", "snapSchedule"),
-    "secsUntil": ("scheduler", "secsUntil"),
-    "minsUntil": ("scheduler", "minsUntil"),
+    "StartupAPI": ("api.startup", "StartupAPI")
 
 }
 
