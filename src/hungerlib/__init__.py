@@ -20,7 +20,7 @@ __all__ = [
     "MinecraftServer",
     "checkLag",
     "DefaultConfig",
-    "HungerSMP",
+    "HungerLogger",
     "__version__",
 ]
 
@@ -73,7 +73,8 @@ def __getattr__(name):
     # config attributes
     if name == "DefaultConfig":
         return _load("config", "DefaultConfig")
-    if name == "HungerSMP":
-        return _load("config", "HungerSMP")
+    if name == "HungerLogger":
+        return _load("logger", "HungerLogger")
+
 
     raise AttributeError(f"module 'hungerlib' has no attribute '{name}'")
