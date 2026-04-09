@@ -1,5 +1,3 @@
-# HungerLib public API with safe lazy imports
-
 __all__ = [
     "utils",
     "scheduler",
@@ -11,40 +9,69 @@ __all__ = [
     "GenericServer",
     "MinecraftServer",
     "checkLag",
+    "DefaultConfig",
+    "HungerSMP",
 ]
 
 import importlib
 
 
+def _load(module_name, attr=None):
+    """
+    Safe lazy loader:
+    - loads module with importlib (no recursion)
+    - returns module OR attribute
+    - caches result in globals()
+    """
+    module = importlib.import_module(f"hungerlib.{module_name}")
+
+    if attr:
+        value = getattr(module, attr)
+        globals()[attr] = value
+        return value
+
+    globals()[module_name] = module
+    return module
+
+
 def __getattr__(name):
+    # module-level exports
     if name == "utils":
-        return importlib.import_module("hungerlib.utils")
+        return _load("utils")
 
     if name == "scheduler":
-        return importlib.import_module("hungerlib.scheduler")
+        return _load("scheduler")
 
     if name == "logger":
-        return importlib.import_module("hungerlib.logger")
+        return _load("logger")
 
     if name == "config":
-        return importlib.import_module("hungerlib.config")
+        return _load("config")
 
     if name == "colormap":
-        return importlib.import_module("hungerlib.colormap")
+        return _load("colormap")
 
     if name == "mchelpers":
-        return importlib.import_module("hungerlib.mchelpers")
+        return _load("mchelpers")
 
+    # class/function exports
     if name == "Panel":
-        return importlib.import_module("hungerlib.panel").Panel
+        return _load("panel", "Panel")
 
     if name == "GenericServer":
-        return importlib.import_module("hungerlib.servers._generic").GenericServer
+        return _load("servers._generic", "GenericServer")
 
     if name == "MinecraftServer":
-        return importlib.import_module("hungerlib.servers.minecraft").MinecraftServer
+        return _load("servers.minecraft", "MinecraftServer")
 
     if name == "checkLag":
-        return importlib.import_module("hungerlib.utils").checkLag
+        return _load("utils", "checkLag")
+
+    # config attributes
+    if name == "DefaultConfig":
+        return _load("config", "DefaultConfig")
+
+    if name == "HungerSMP":
+        return _load("config", "HungerSMP")
 
     raise AttributeError(f"module 'hungerlib' has no attribute '{name}'")
