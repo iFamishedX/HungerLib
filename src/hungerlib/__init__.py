@@ -20,7 +20,7 @@ _EXPORTS = {
     # addon modules
     "genericAddons": ('addons._generic', None),
     'minecraftAddons': ('addons.minecraft', None),
-    "colormap": ("colormap", None),
+    "colormap": ("addons.colormap", None),
 
     # classes / functions
     "Panel": ("panel", "Panel"),
@@ -35,16 +35,14 @@ _EXPORTS = {
     "secsUntil": ("scheduler", "secsUntil"),
     "minsUntil": ("scheduler", "minsUntil"),
 
-
-    "MC_COLOR_MAP": ("colormap", "MC_COLO    # color mapsR_MAP"),
-    "ASCI_COLOR_MAP": ("colormap", "ASCI_COLOR_MAP"),
-
     # addons
     "runCountdownEvents": ('addons._generic', 'runCountdownEvents'),
     'validateAll': ('addons._generic', 'validateAll'),
     "waitForOnline": ("addons._generic", 'waitForOnline'),
     "waitForOffline": ("addons._generic", 'waitForOffline'),
-    'checkLag': ('addons.minecraft', 'checkLag')
+    'checkLag': ('addons.minecraft', 'checkLag'),
+    "MC_COLOR_MAP": ("addons.colormap", "MC_COLOR_MAP"),
+    "ASCI_COLOR_MAP": ("addons.colormap", "ASCI_COLOR_MAP")
 
 }
 
