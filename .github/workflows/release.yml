@@ -19,6 +19,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Debug paths
+        run: |
+          echo "PWD: $(pwd)"
+          echo "---"
+          ls -R .
+
       - name: Install yq
         run: sudo snap install yq
 
