@@ -56,7 +56,7 @@ jobs:
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
         run: |
-          python - <<EOF
+          cat > inject_version.py << 'EOF'
 import tomli, tomli_w
 
 with open("pyproject.toml", "rb") as f:
@@ -67,6 +67,8 @@ data["project"]["version"] = "${VERSION}"
 with open("pyproject.toml", "wb") as f:
     f.write(tomli_w.dumps(data).encode())
 EOF
+
+          python inject_version.py
 
           echo "---- pyproject.toml (after) ----"
           sed -n '1,200p' pyproject.toml
