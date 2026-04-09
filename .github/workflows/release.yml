@@ -1,4 +1,4 @@
-name: Versioned Release - Debug Lockdown
+name: Versioned Release
 
 on:
   push:
@@ -14,36 +14,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout into workspace
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           path: .
 
-      - name: Environment debug
+      - name: Debug environment
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           echo "PWD: $(pwd)"
           echo "--- ls -la ---"
           ls -la
 
-      - name: Install Python tools early
+      - name: Install tools
         run: |
           python -m pip install --upgrade pip
           pip install tomli toml-cli build
+          sudo snap install yq || true
 
-      - name: Show pyproject.toml (before)
+      - name: Show pyproject.toml before injection
         run: |
           echo "---- pyproject.toml (before) ----"
           sed -n '1,200p' pyproject.toml || true
 
-          printf "import tomli, json\nwith open('pyproject.toml','rb') as f:\n    d=tomli.load(f)\nprint(json.dumps(d.get('project'), indent=2))\n" > inspect.py
-          echo "---- parsed project table ----"
-          python inspect.py || true
+          printf "import tomli, json\nwith open('pyproject.toml','rb') as f:\n d=tomli.load(f)\nprint(json.dumps(d.get('project'), indent=2))\n" > inspect_before.py
+          python inspect_before.py || true
 
-      - name: Install yq
-        run: sudo snap install yq || true
-
-      - name: Parse version.yaml and export env
+      - name: Parse version.yaml
         id: version
         run: |
           RUN=$(yq '.run' version.yaml)
@@ -69,8 +66,7 @@ jobs:
           echo "---- pyproject.toml (after) ----"
           sed -n '1,200p' pyproject.toml || true
 
-          printf "import tomli, json\nwith open('pyproject.toml','rb') as f:\n    d=tomli.load(f)\nprint(json.dumps(d.get('project'), indent=2))\n" > inspect_after.py
-          echo "---- parsed project table (after) ----"
+          printf "import tomli, json\nwith open('pyproject.toml','rb') as f:\n d=tomli.load(f)\nprint(json.dumps(d.get('project'), indent=2))\n" > inspect_after.py
           python inspect_after.py || true
 
       - name: Validate version format
@@ -81,6 +77,18 @@ jobs:
             echo "Invalid version format: $VERSION"
             exit 1
           fi
+
+      - name: Set up Python 3.11
+        if: env.RUN == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools (inside Python 3.11)
+        if: env.RUN == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
 
       - name: Build package
         if: env.RUN == 'true'
@@ -110,7 +118,7 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }}
-          body: ${{ env.FINAL_DESC }}
+          body: ${{ env.DESC }}
           files: |
             dist/*.whl
             dist/*.tar.gz
