@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from hungerlib.colormap import *
+from hungerlib.addons.colormap import *
 
 @dataclass
 class Config:

@@ -1,4 +1,4 @@
 run: true
-version: "1.3.1-dev"
+version: "1.3.2-dev"
 description: |
-  - Fixed colormap imports
+  - Fixed config.py imports
