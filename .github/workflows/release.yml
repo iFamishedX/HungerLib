@@ -1,4 +1,4 @@
-name: Versioned Release
+name: Versioned Release - Debug Lockdown
 
 on:
   push:
@@ -14,37 +14,82 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout into workspace
         uses: actions/checkout@v4
         with:
           path: .
 
-      - name: Debug paths
+      - name: Environment debug
         run: |
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           echo "PWD: $(pwd)"
-          echo "---"
-          ls -R .
+          echo "User: $(whoami)"
+          echo "--- ls -la ---"
+          ls -la
+          echo "--- ls -la repo ---"
+          ls -la .
 
-      - name: Install yq
-        run: sudo snap install yq
+      - name: Show pyproject.toml (before)
+        run: |
+          echo "---- pyproject.toml (before) ----"
+          if [ -f pyproject.toml ]; then
+            sed -n '1,200p' pyproject.toml || true
+          else
+            echo "pyproject.toml NOT FOUND"
+          fi
+          echo "---- parse project table with tomli (before) ----"
+          python - <<'PY'
+import sys, json
+try:
+    import tomli
+    with open("pyproject.toml","rb") as f:
+        data = tomli.load(f)
+    print(json.dumps(data.get("project"), indent=2))
+except Exception as e:
+    print("ERROR parsing pyproject.toml:", e)
+PY
 
-      - name: Parse version.yaml
+      - name: Install yq and toml-cli
+        run: |
+          sudo snap install yq || true
+          python -m pip install --upgrade pip
+          pip install toml-cli tomli build
+
+      - name: Parse version.yaml and export env
         id: version
         run: |
           RUN=$(yq '.run' version.yaml)
           VERSION=$(yq '.version' version.yaml)
           DESC=$(yq '.description' version.yaml)
-
           echo "RUN=$RUN" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-
           echo "DESC<<EOF" >> $GITHUB_ENV
           echo "$DESC" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+          echo "version.yaml values:"
+          echo "RUN=$RUN"
+          echo "VERSION=$VERSION"
+          echo "DESC=${DESC:0:200}"
 
-      - name: Stop if run=false
-        if: env.RUN == 'false'
-        run: echo "Skipping release because run=false."
+      - name: Inject version into pyproject.toml (if run=true)
+        if: env.RUN == 'true'
+        run: |
+          echo "---- injecting version ${VERSION} ----"
+          toml set --toml-path pyproject.toml project.version "${VERSION}" > pyproject.new
+          mv pyproject.new pyproject.toml || (echo "toml set failed"; exit 1)
+          echo "---- pyproject.toml (after injection) ----"
+          sed -n '1,200p' pyproject.toml || true
+          echo "---- parse project table with tomli (after) ----"
+          python - <<'PY'
+import sys, json
+try:
+    import tomli
+    with open("pyproject.toml","rb") as f:
+        data = tomli.load(f)
+    print(json.dumps(data.get("project"), indent=2))
+except Exception as e:
+    print("ERROR parsing pyproject.toml:", e)
+PY
 
       - name: Validate version format
         if: env.RUN == 'true'
@@ -54,65 +99,37 @@ jobs:
             echo "Invalid version format: $VERSION"
             exit 1
           fi
+          echo "Version format OK: $VERSION"
 
-      - name: Install toml-cli
+      - name: Build package (produce artifacts)
         if: env.RUN == 'true'
         run: |
-          python -m pip install --upgrade pip
-          pip install toml-cli
+          rm -rf dist || true
+          python -m build -o dist
+          echo "---- dist listing ----"
+          ls -la dist || true
 
-      - name: Inject version into pyproject.toml
+      - name: Inspect built artifacts metadata
         if: env.RUN == 'true'
         run: |
-          toml set --toml-path pyproject.toml project.version "${{ env.VERSION }}" > pyproject.new
-          mv pyproject.new pyproject.toml
+          echo "---- show METADATA / PKG-INFO from artifacts ----"
+          for f in dist/*; do
+            echo "=== $f ==="
+            case "$f" in
+              *.whl)
+                unzip -p "$f" '*/METADATA' || echo "no METADATA in $f"
+                ;;
+              *.tar.gz)
+                tar -xOzf "$f" */PKG-INFO || echo "no PKG-INFO in $f"
+                ;;
+              *)
+                echo "unknown artifact type: $f"
+                ;;
+            esac
+            echo "-------------------------"
+          done
 
-      - name: Generate changelog
-        if: env.RUN == 'true'
-        id: changelog
-        run: |
-          VERSION="${{ env.VERSION }}"
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -z "$LAST_TAG" ]; then
-            LOG=$(git log --pretty=format:"- %s")
-          else
-            LOG=$(git log $LAST_TAG..HEAD --pretty=format:"- %s")
-          fi
-
-          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          echo "$LOG" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Merge description + changelog
-        if: env.RUN == 'true'
-        run: |
-          if [ -z "${{ env.DESC }}" ]; then
-            FINAL="${{ env.CHANGELOG }}"
-          else
-            FINAL="${{ env.DESC }}\n\nChangelog:\n${{ env.CHANGELOG }}"
-          fi
-
-          echo "FINAL_DESC<<EOF" >> $GITHUB_ENV
-          echo -e "$FINAL" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Set up Python
-        if: env.RUN == 'true'
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
-      - name: Install build tools
-        if: env.RUN == 'true'
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
-
-      - name: Build package
-        if: env.RUN == 'true'
-        run: python -m build
-
-      - name: Create GitHub Release
+      - name: Create GitHub Release (artifacts)
         if: env.RUN == 'true'
         uses: softprops/action-gh-release@v2
         with:
