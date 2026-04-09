@@ -10,14 +10,17 @@ except PackageNotFoundError:
 # api map
 # name > (module_path, attribute_name or None)
 _EXPORTS = {
-    # modules"
-    "colormap": ("colormap", None),
+    # modules
     "config": ("config", None),
     "logger": ("logger", None),
     "mchelpers": ("mchelpers", None),
     "panel": ("panel", None),
     "scheduler": ("scheduler", None),
-    "utils": ("utils", None),
+
+    # addon modules
+    "genericAddons": ('addons._generic', None),
+    'minecraftAddons': ('addons.minecraft', None),
+    "colormap": ("colormap", None),
 
     # classes / functions
     "Panel": ("panel", "Panel"),
@@ -32,15 +35,16 @@ _EXPORTS = {
     "secsUntil": ("scheduler", "secsUntil"),
     "minsUntil": ("scheduler", "minsUntil"),
 
-    # color maps
-    "MC_COLOR_MAP": ("colormap", "MC_COLOR_MAP"),
+
+    "MC_COLOR_MAP": ("colormap", "MC_COLO    # color mapsR_MAP"),
     "ASCI_COLOR_MAP": ("colormap", "ASCI_COLOR_MAP"),
 
-    # utils
-    "checkLag": ("utils", "checkLag"),
-    "validateAll": ("utils", 'validateAll'),
-    "waitForOnline": ("utils", 'waitForOnline'),
-    "waitForOffline": ("utils", 'waitForOffline')
+    # addons
+    "runCountdownEvents": ('addons._generic', 'runCountdownEvents'),
+    'validateAll': ('addons._generic', 'validateAll'),
+    "waitForOnline": ("addons._generic", 'waitForOnline'),
+    "waitForOffline": ("addons._generic", 'waitForOffline'),
+    'checkLag': ('addons.minecraft', 'checkLag')
 
 }
 
