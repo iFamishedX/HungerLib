@@ -30,6 +30,7 @@ jobs:
 
       - name: Parse version.yaml
         id: version
+        working-directory: ${{ github.workspace }}/HungerLib
         run: |
           RUN=$(yq '.run' version.yaml)
           VERSION=$(yq '.version' version.yaml)
@@ -64,6 +65,7 @@ jobs:
 
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
+        working-directory: ${{ github.workspace }}/HungerLib
         run: |
           toml set --toml-path pyproject.toml project.version "${{ env.VERSION }}" > pyproject.new
           mv pyproject.new pyproject.toml
@@ -71,6 +73,7 @@ jobs:
       - name: Generate changelog
         if: env.RUN == 'true'
         id: changelog
+        working-directory: ${{ github.workspace }}/HungerLib
         run: |
           VERSION="${{ env.VERSION }}"
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -86,6 +89,7 @@ jobs:
 
       - name: Merge description + changelog
         if: env.RUN == 'true'
+        working-directory: ${{ github.workspace }}/HungerLib
         run: |
           if [ -z "${{ env.DESC }}" ]; then
             FINAL="${{ env.CHANGELOG }}"
@@ -111,6 +115,7 @@ jobs:
 
       - name: Build package
         if: env.RUN == 'true'
+        working-directory: ${{ github.workspace }}/HungerLib
         run: python -m build
 
       - name: Create GitHub Release
@@ -121,11 +126,11 @@ jobs:
           name: ${{ env.VERSION }}
           body: ${{ env.FINAL_DESC }}
           files: |
-            dist/*.whl
-            dist/*.tar.gz
+            ${{ github.workspace }}/HungerLib/dist/*.whl
+            ${{ github.workspace }}/HungerLib/dist/*.tar.gz
 
       - name: Publish to PyPI
         if: env.RUN == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist/
+          packages-dir: ${{ github.workspace }}/HungerLib/dist/
