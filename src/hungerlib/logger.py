@@ -16,7 +16,7 @@ class HungerLogger:
         self,
         loggerName,
         Config=DefaultConfig,
-        backspaces=None,
+        backspaces=0,
         logDir=None,
         server=None
     ):
