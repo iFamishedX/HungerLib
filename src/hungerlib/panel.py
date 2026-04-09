@@ -1,5 +1,6 @@
 import requests
 
+from hungerlib.api.command import CommandAPI
 from hungerlib.api.schedule import ScheduleAPI
 from hungerlib.api.filemanager import FileManagerAPI
 from hungerlib.api.backups import BackupsAPI
