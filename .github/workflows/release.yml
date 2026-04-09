@@ -16,51 +16,123 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Read VERSION file
+      - name: Install yq
+        run: sudo snap install yq
+
+      - name: Parse version.yaml
         id: version
         run: |
-          VERSION_CONTENT=$(cat VERSION | tr -d ' \t\n\r')
-          echo "VERSION=$VERSION_CONTENT" >> $GITHUB_ENV
+          RUN=$(yq '.run' version.yaml)
+          VERSION=$(yq '.version' version.yaml)
+          DESC=$(yq '.description' version.yaml)
 
-          if [ -z "$VERSION_CONTENT" ] || [ "$VERSION_CONTENT" = "NUL" ]; then
-            echo "SKIP_RELEASE=true" >> $GITHUB_ENV
-          else
-            echo "SKIP_RELEASE=false" >> $GITHUB_ENV
+          echo "RUN=$RUN" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+          echo "DESC<<EOF" >> $GITHUB_ENV
+          echo "$DESC" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Stop if run=false
+        if: env.RUN == 'false'
+        run: echo "Skipping release because run=false."
+
+      - name: Validate version format
+        if: env.RUN == 'true'
+        run: |
+          VERSION="${{ env.VERSION }}"
+
+          if ! [[ "$VERSION" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([a-zA-Z0-9]+))?$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
           fi
 
-      - name: Stop if release is skipped
-        if: env.SKIP_RELEASE == 'true'
-        run: echo "Skipping release because VERSION is empty or NUL."
+          MAJOR=${BASH_REMATCH[1]}
+          MINOR=${BASH_REMATCH[3]}
+          STEP=${BASH_REMATCH[5]}
+
+          if [[ -z "$MINOR" && -n "$STEP" ]]; then
+            echo "Invalid version: step exists but minor is missing"
+            exit 1
+          fi
+
+          if [[ -n "$STEP" && "$STEP" -gt 999 ]]; then
+            echo "Invalid version: step too large"
+            exit 1
+          fi
+
+      - name: Generate changelog
+        if: env.RUN == 'true'
+        id: changelog
+        run: |
+          VERSION="${{ env.VERSION }}"
+
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            LOG=$(git log --pretty=format:"- %s")
+          else
+            LOG=$(git log $LAST_TAG..HEAD --pretty=format:"- %s")
+          fi
+
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$LOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Merge description + changelog
+        if: env.RUN == 'true'
+        run: |
+          if [ -z "${{ env.DESC }}" ]; then
+            FINAL="${{ env.CHANGELOG }}"
+          else
+            FINAL="${{ env.DESC }}\n\nChangelog:\n${{ env.CHANGELOG }}"
+          fi
+
+          echo "FINAL_DESC<<EOF" >> $GITHUB_ENV
+          echo -e "$FINAL" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Set up Python
-        if: env.SKIP_RELEASE == 'false'
+        if: env.RUN == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
       - name: Install build tools
-        if: env.SKIP_RELEASE == 'false'
+        if: env.RUN == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install build
 
       - name: Build package
-        if: env.SKIP_RELEASE == 'false'
+        if: env.RUN == 'true'
         run: python -m build
 
       - name: Create GitHub Release
-        if: env.SKIP_RELEASE == 'false'
+        if: env.RUN == 'true'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }}
+          body: ${{ env.FINAL_DESC }}
           files: |
             dist/*.whl
             dist/*.tar.gz
 
       - name: Publish to PyPI
-        if: env.SKIP_RELEASE == 'false'
+        if: env.RUN == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+
+      - name: Auto-reset version.yaml
+        if: env.RUN == 'true'
+        run: |
+          yq -i '.run = false | .description = ""' version.yaml
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add version.yaml
+          git commit -m "Auto-reset version.yaml after release"
+          git push
