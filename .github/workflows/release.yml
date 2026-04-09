@@ -26,15 +26,10 @@ jobs:
       - name: Parse version.yaml
         id: version
         run: |
-          RUN=$(yq '.run' version.yaml)
-          VERSION=$(yq '.version' version.yaml)
-          DESC=$(yq '.description' version.yaml)
-
-          echo "RUN=$RUN" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
+          echo "RUN=$(yq '.run' version.yaml)" >> $GITHUB_ENV
+          echo "VERSION=$(yq '.version' version.yaml)" >> $GITHUB_ENV
           echo "DESC<<EOF" >> $GITHUB_ENV
-          echo "$DESC" >> $GITHUB_ENV
+          yq '.description' version.yaml >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Stop if run=false
@@ -44,24 +39,13 @@ jobs:
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
         run: |
-          cat > inject_version.py << 'EOF'
-import tomli, tomli_w
-
-with open("pyproject.toml", "rb") as f:
-    data = tomli.load(f)
-
-data["project"]["version"] = "${VERSION}"
-
-with open("pyproject.toml", "wb") as f:
-    f.write(tomli_w.dumps(data).encode())
-EOF
-          python inject_version.py
+          python -c "import tomli, tomli_w; d=tomli.load(open('pyproject.toml','rb')); d['project']['version']='${VERSION}'; open('pyproject.toml','wb').write(tomli_w.dumps(d).encode())"
 
       - name: Set up Python 3.11
         if: env.RUN == 'true'
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Build package
         if: env.RUN == 'true'
