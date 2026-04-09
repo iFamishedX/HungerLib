@@ -1,5 +1,4 @@
 run: true
-version: "2.0.2-dev"
+version: "2.0.3-dev"
 description: |
-  - Readded core class direct imports
-  - Removed stray comma in __init__.py
+  - Added comma in line 22 of __init__.py
