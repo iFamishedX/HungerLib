@@ -105,6 +105,7 @@ jobs:
 
       - name: Build package
         if: env.RUN == 'true'
+        working-directory: HungerLib
         run: python -m build
 
       - name: Create GitHub Release
@@ -115,11 +116,11 @@ jobs:
           name: ${{ env.VERSION }}
           body: ${{ env.FINAL_DESC }}
           files: |
-            dist/*.whl
-            dist/*.tar.gz
+            HungerLib/dist/*.whl
+            HungerLib/dist/*.tar.gz
 
       - name: Publish to PyPI
         if: env.RUN == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist/
+          packages-dir: HungerLib/dist/
