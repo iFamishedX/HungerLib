@@ -13,6 +13,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: HungerLib
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +49,6 @@ jobs:
         run: |
           VERSION="${{ env.VERSION }}"
 
-          # Format: major(.minor)?(.step)?(-flag)?
           if ! [[ "$VERSION" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([a-zA-Z0-9]+))?$ ]]; then
             echo "Invalid version format: $VERSION"
             exit 1
