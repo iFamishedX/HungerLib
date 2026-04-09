@@ -16,25 +16,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          path: .
-
-      - name: Debug environment
-        run: |
-          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-          echo "PWD: $(pwd)"
-          ls -la
 
       - name: Install tools
         run: |
           python -m pip install --upgrade pip
           pip install tomli tomli_w build
           sudo snap install yq || true
-
-      - name: Show pyproject.toml before injection
-        run: |
-          echo "---- pyproject.toml (before) ----"
-          sed -n '1,200p' pyproject.toml
 
       - name: Parse version.yaml
         id: version
@@ -50,8 +37,9 @@ jobs:
           echo "$DESC" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-          echo "RUN=$RUN"
-          echo "VERSION=$VERSION"
+      - name: Stop if run=false
+        if: env.RUN == 'false'
+        run: echo "run=false → skipping release."
 
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
@@ -67,20 +55,7 @@ data["project"]["version"] = "${VERSION}"
 with open("pyproject.toml", "wb") as f:
     f.write(tomli_w.dumps(data).encode())
 EOF
-
           python inject_version.py
-
-          echo "---- pyproject.toml (after) ----"
-          sed -n '1,200p' pyproject.toml
-
-      - name: Validate version format
-        if: env.RUN == 'true'
-        run: |
-          VERSION="${{ env.VERSION }}"
-          if ! [[ "$VERSION" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([a-zA-Z0-9]+))?$ ]]; then
-            echo "Invalid version format: $VERSION"
-            exit 1
-          fi
 
       - name: Set up Python 3.11
         if: env.RUN == 'true'
@@ -88,33 +63,11 @@ EOF
         with:
           python-version: "3.11"
 
-      - name: Install build tools
-        if: env.RUN == 'true'
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
-
       - name: Build package
         if: env.RUN == 'true'
         run: |
-          rm -rf dist || true
-          python -m build -o dist
-          echo "---- dist listing ----"
-          ls -la dist
-
-      - name: Inspect built artifacts metadata
-        if: env.RUN == 'true'
-        run: |
-          echo "---- METADATA / PKG-INFO ----"
-          for f in dist/*; do
-            echo "=== $f ==="
-            if [[ "$f" == *.whl ]]; then
-              unzip -p "$f" '*/METADATA' || true
-            else
-              tar -xOzf "$f" */PKG-INFO || true
-            fi
-            echo "-------------------------"
-          done
+          rm -rf dist
+          python -m build
 
       - name: Create GitHub Release
         if: env.RUN == 'true'
