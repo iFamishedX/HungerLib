@@ -23,22 +23,18 @@ jobs:
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
           echo "PWD: $(pwd)"
-          echo "--- ls -la ---"
           ls -la
 
       - name: Install tools
         run: |
           python -m pip install --upgrade pip
-          pip install tomli toml-cli build
+          pip install tomli tomli_w build
           sudo snap install yq || true
 
       - name: Show pyproject.toml before injection
         run: |
           echo "---- pyproject.toml (before) ----"
-          sed -n '1,200p' pyproject.toml || true
-
-          printf "import tomli, json\nwith open('pyproject.toml','rb') as f:\n d=tomli.load(f)\nprint(json.dumps(d.get('project'), indent=2))\n" > inspect_before.py
-          python inspect_before.py || true
+          sed -n '1,200p' pyproject.toml
 
       - name: Parse version.yaml
         id: version
@@ -60,14 +56,20 @@ jobs:
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
         run: |
-          toml set --toml-path pyproject.toml project.version "${VERSION}" > pyproject.new
-          mv pyproject.new pyproject.toml
+          python - <<EOF
+import tomli, tomli_w
+
+with open("pyproject.toml", "rb") as f:
+    data = tomli.load(f)
+
+data["project"]["version"] = "${VERSION}"
+
+with open("pyproject.toml", "wb") as f:
+    f.write(tomli_w.dumps(data).encode())
+EOF
 
           echo "---- pyproject.toml (after) ----"
-          sed -n '1,200p' pyproject.toml || true
-
-          printf "import tomli, json\nwith open('pyproject.toml','rb') as f:\n d=tomli.load(f)\nprint(json.dumps(d.get('project'), indent=2))\n" > inspect_after.py
-          python inspect_after.py || true
+          sed -n '1,200p' pyproject.toml
 
       - name: Validate version format
         if: env.RUN == 'true'
@@ -84,7 +86,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install build tools (inside Python 3.11)
+      - name: Install build tools
         if: env.RUN == 'true'
         run: |
           python -m pip install --upgrade pip
