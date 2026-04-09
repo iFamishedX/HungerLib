@@ -13,6 +13,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: HungerLib
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,7 +28,6 @@ jobs:
 
       - name: Parse version.yaml
         id: version
-        working-directory: HungerLib
         run: |
           RUN=$(yq '.run' version.yaml)
           VERSION=$(yq '.version' version.yaml)
@@ -51,20 +54,6 @@ jobs:
             exit 1
           fi
 
-          MAJOR=${BASH_REMATCH[1]}
-          MINOR=${BASH_REMATCH[3]}
-          STEP=${BASH_REMATCH[5]}
-
-          if [[ -z "$MINOR" && -n "$STEP" ]]; then
-            echo "Invalid version: step exists but minor is missing"
-            exit 1
-          fi
-
-          if [[ -n "$STEP" && "$STEP" -gt 999 ]]; then
-            echo "Invalid version: step too large"
-            exit 1
-          fi
-
       - name: Install toml-cli
         if: env.RUN == 'true'
         run: |
@@ -73,7 +62,6 @@ jobs:
 
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
-        working-directory: HungerLib
         run: |
           toml set --toml-path pyproject.toml project.version "${{ env.VERSION }}" > pyproject.new
           mv pyproject.new pyproject.toml
@@ -81,10 +69,8 @@ jobs:
       - name: Generate changelog
         if: env.RUN == 'true'
         id: changelog
-        working-directory: HungerLib
         run: |
           VERSION="${{ env.VERSION }}"
-
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -z "$LAST_TAG" ]; then
             LOG=$(git log --pretty=format:"- %s")
@@ -98,7 +84,6 @@ jobs:
 
       - name: Merge description + changelog
         if: env.RUN == 'true'
-        working-directory: HungerLib
         run: |
           if [ -z "${{ env.DESC }}" ]; then
             FINAL="${{ env.CHANGELOG }}"
@@ -124,7 +109,6 @@ jobs:
 
       - name: Build package
         if: env.RUN == 'true'
-        working-directory: HungerLib
         run: python -m build
 
       - name: Create GitHub Release
@@ -135,22 +119,11 @@ jobs:
           name: ${{ env.VERSION }}
           body: ${{ env.FINAL_DESC }}
           files: |
-            HungerLib/dist/*.whl
-            HungerLib/dist/*.tar.gz
+            dist/*.whl
+            dist/*.tar.gz
 
       - name: Publish to PyPI
         if: env.RUN == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: HungerLib/dist/
-
-      - name: Auto-reset version.yaml
-        if: env.RUN == 'true'
-        working-directory: HungerLib
-        run: |
-          yq -i '.run = false | .description = ""' version.yaml
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add version.yaml
-          git commit -m "Auto-reset version.yaml after release"
-          git push
+          packages-dir: dist/
