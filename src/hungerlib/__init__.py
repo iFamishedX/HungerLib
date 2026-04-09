@@ -1,5 +1,3 @@
-# HungerLib public API with safe lazy imports and runtime version metadata
-
 from importlib.metadata import version as _pkg_version, PackageNotFoundError
 import importlib
 
@@ -8,73 +6,62 @@ try:
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
-__all__ = [
-    "utils",
-    "scheduler",
-    "logger",
-    "config",
-    "colormap",
-    "mchelpers",
-    "Panel",
-    "GenericServer",
-    "MinecraftServer",
-    "checkLag",
-    "DefaultConfig",
-    "HungerLogger",
-    "__version__",
-]
+
+# api map
+# name > (module_path, attribute_name or None)
+_EXPORTS = {
+    # modules"
+    "colormap": ("colormap", None),
+    "config": ("config", None),
+    "logger": ("logger", None),
+    "mchelpers": ("mchelpers", None),
+    "panel": ("panel", None),
+    "scheduler": ("scheduler", None),
+    "utils": ("utils", None),
+
+    # classes / functions
+    "Panel": ("panel", "Panel"),
+    "GenericServer": ("servers._generic", "GenericServer"),
+    "MinecraftServer": ("servers.minecraft", "MinecraftServer"),
+    "DefaultConfig": ("config", "DefaultConfig"),
+    "HungerLogger": ("logger", "HungerLogger"),
+    "MCHelpers": ("mchelpers", "MCHelpers"),
+
+    # schedulers
+    "snapSchedule": ("scheduler", "snapSchedule"),
+    "secsUntil": ("scheduler", "secsUntil"),
+    "minsUntil": ("scheduler", "minsuntil"),
+
+    # color maps
+    "MC_COLOR_MAP": ("colormap", "MC_COLOR_MAP"),
+    "ASCI_COLOR_MAP": ("colormap", "ASCI_COLOR_MAP"),
+
+    # utils
+    "checkLag": ("utils", "checkLag"),
+    "validateAll": ("utils", 'validateAll'),
+    "waitForOnline": ("utils", 'waitForOnline'),
+    "waitForOffline": ("utils", 'waitForOffline')
+
+}
 
 
-def _load(module_name, attr=None):
-    """
-    Safe lazy loader:
-    - loads module via importlib (no __getattr__ recursion)
-    - returns module OR attribute
-    - caches result in globals() so subsequent access is direct
-    """
+__all__ = list(_EXPORTS.keys()) + ["__version__"]
+
+
+# lazy loader
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(f"module 'hungerlib' has no attribute '{name}'")
+
+    module_name, attr = _EXPORTS[name]
     module = importlib.import_module(f"hungerlib.{module_name}")
 
-    if attr is not None:
-        value = getattr(module, attr)
-        globals()[attr] = value
-        return value
+    # If exporting the module itself
+    if attr is None:
+        globals()[name] = module
+        return module
 
-    # cache module under its short name (e.g., "utils", "config")
-    short_name = module_name.rsplit(".", 1)[-1]
-    globals()[short_name] = module
-    return module
-
-
-def __getattr__(name):
-    # module-level exports
-    if name == "utils":
-        return _load("utils")
-    if name == "scheduler":
-        return _load("scheduler")
-    if name == "logger":
-        return _load("logger")
-    if name == "config":
-        return _load("config")
-    if name == "colormap":
-        return _load("colormap")
-    if name == "mchelpers":
-        return _load("mchelpers")
-
-    # class/function exports
-    if name == "Panel":
-        return _load("panel", "Panel")
-    if name == "GenericServer":
-        return _load("servers._generic", "GenericServer")
-    if name == "MinecraftServer":
-        return _load("servers.minecraft", "MinecraftServer")
-    if name == "checkLag":
-        return _load("utils", "checkLag")
-
-    # config attributes
-    if name == "DefaultConfig":
-        return _load("config", "DefaultConfig")
-    if name == "HungerLogger":
-        return _load("logger", "HungerLogger")
-
-
-    raise AttributeError(f"module 'hungerlib' has no attribute '{name}'")
+    # If exporting a specific attribute
+    value = getattr(module, attr)
+    globals()[name] = value
+    return value

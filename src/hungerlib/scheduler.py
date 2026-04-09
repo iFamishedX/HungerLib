@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timedelta
 
 
-def schedule(logger, minimumMinutes=30, snapMinutes=(0, 30)):
+def snapSchedule(logger, minimumMinutes=30, snapMinutes=(0, 30)):
 
     now = datetime.now()
     logger.info(f"Current time: {now.strftime('%I:%M:%S %p')}")
