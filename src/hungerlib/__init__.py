@@ -14,6 +14,7 @@ _EXPORTS = {
     "panel": ("panel", None),
     "config": ("config", None),
     "logger": ("logger", None),
+    "scheduler": ('scheduler', None),
 
     # servers
     "GenericServer": ("servers._generic", "GenericServer"),
@@ -39,6 +40,12 @@ _EXPORTS = {
     "BackupsAPI": ("api.backups", "BackupsAPI"),
     "DatabasesAPI": ("api.databases", "DatabasesAPI"),
     "StartupAPI": ("api.startup", "StartupAPI"),
+    
+    # scheduler utilities
+    "snapSchedule": ("scheduler", "snapSchedule"),
+    "secsUntil": ("scheduler", "secsUntil"),
+    "minsUntil": ("scheduler", "minsUntil"),
+
 }
 
 

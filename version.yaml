@@ -1,6 +1,4 @@
 run: true
-version: "2-dev"
+version: "2.0.1-dev"
 description: |
-  - Created internal API for cleaner functions and classes
-  - Updated servers and panel.py and servers/_generic.py to reflect new api endpoints
-  - Updated __init__.py to reflect changes
+  - Readded scheduler imports
