@@ -14,6 +14,7 @@ class Config:
     info_prefix: str = '<white>[INFO]: '
     warn_prefix: str = '<yellow>[WARN]: '
     error_prefix: str = '<red>[ERROR]: '
+    backspaces: int = 8
 
     log_path: Path = Path("/home/container/logs")
     log_destination_method: str = 'rcon'

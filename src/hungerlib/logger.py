@@ -16,6 +16,7 @@ class HungerLogger:
         self,
         loggerName,
         Config=DefaultConfig,
+        backspaces=None,
         logDir=None,
         server=None
     ):
@@ -25,6 +26,7 @@ class HungerLogger:
         If no Config class is defined, DefaultConfig is used.
         '''
         self.loggerName = loggerName
+        self.backspaces = '\b' * backspaces
         self.config = Config
         self.server = server
 
@@ -77,9 +79,9 @@ class HungerLogger:
             return
         colored = self._apply_colors(msg, self.config.destination_color_map)
         if self.log_destination_method == 'rcon':
-            self.server._rcon_send(f'logtellraw targetless \"{colored}\"')
+            self.server._rcon_send(f'logtellraw targetless \"{self.backspaces}{colored}\"')
         if self.log_destination_method == 'api':
-            self.server.sendConsoleCommand(f'logtellraw targetless \"{colored}\"')
+            self.server.sendConsoleCommand(f'logtellraw targetless \"{self.backspaces}{colored}\"')
             
 
     def _log(self, level, msg, destination, origin, logs):
