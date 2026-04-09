@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hungerlib"
-dynamic = ["version"]
+version = "0.0.0"
 description = "Powerful automation library for Pterodactyl."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -50,6 +50,3 @@ Issues = "https://github.com/iFamishedX/HungerLib/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.dynamic]
-version = { attr = "hungerlib._version.__version__" }
