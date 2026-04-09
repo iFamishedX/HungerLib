@@ -13,37 +13,38 @@ __all__ = [
     "checkLag",
 ]
 
-# Lazy imports to avoid import-time failures during packaging
+import importlib
+
+
 def __getattr__(name):
     if name == "utils":
-        from . import utils
-        return utils
+        return importlib.import_module("hungerlib.utils")
+
     if name == "scheduler":
-        from . import scheduler
-        return scheduler
+        return importlib.import_module("hungerlib.scheduler")
+
     if name == "logger":
-        from . import logger
-        return logger
+        return importlib.import_module("hungerlib.logger")
+
     if name == "config":
-        from . import config
-        return config
+        return importlib.import_module("hungerlib.config")
+
     if name == "colormap":
-        from . import colormap
-        return colormap
+        return importlib.import_module("hungerlib.colormap")
+
     if name == "mchelpers":
-        from . import mchelpers
-        return mchelpers
+        return importlib.import_module("hungerlib.mchelpers")
+
     if name == "Panel":
-        from .panel import Panel
-        return Panel
+        return importlib.import_module("hungerlib.panel").Panel
+
     if name == "GenericServer":
-        from .servers._generic import GenericServer
-        return GenericServer
+        return importlib.import_module("hungerlib.servers._generic").GenericServer
+
     if name == "MinecraftServer":
-        from .servers.minecraft import MinecraftServer
-        return MinecraftServer
+        return importlib.import_module("hungerlib.servers.minecraft").MinecraftServer
+
     if name == "checkLag":
-        from .utils import checkLag
-        return checkLag
+        return importlib.import_module("hungerlib.utils").checkLag
 
     raise AttributeError(f"module 'hungerlib' has no attribute '{name}'")

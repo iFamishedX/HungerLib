@@ -1,4 +1,4 @@
 run: true
 version: "1.1.2-alpha"
 description: |
-  - Changed logger.py's initialization backspace amount
+  - Fixed __init__.py lazy import
