@@ -1,5 +1,4 @@
 run: true
-version: "1.2-beta"
+version: "1.2.1-beta"
 description: |
-  - Renamed schedule() to snapSchedule()
-  - Redesigned UX for __init__.py to better support lazy imports
+  - Fixed misimport "minsuntil" to "minsUntil"

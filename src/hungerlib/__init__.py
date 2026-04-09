@@ -30,7 +30,7 @@ _EXPORTS = {
     # schedulers
     "snapSchedule": ("scheduler", "snapSchedule"),
     "secsUntil": ("scheduler", "secsUntil"),
-    "minsUntil": ("scheduler", "minsuntil"),
+    "minsUntil": ("scheduler", "minsUntil"),
 
     # color maps
     "MC_COLOR_MAP": ("colormap", "MC_COLOR_MAP"),
