@@ -45,6 +45,7 @@ jobs:
         run: |
           VERSION="${{ env.VERSION }}"
 
+          # Regex: major(.minor)?(.step)?(-flag)?
           if ! [[ "$VERSION" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([a-zA-Z0-9]+))?$ ]]; then
             echo "Invalid version format: $VERSION"
             exit 1
@@ -63,6 +64,11 @@ jobs:
             echo "Invalid version: step too large"
             exit 1
           fi
+
+      - name: Inject version into pyproject.toml
+        if: env.RUN == 'true'
+        run: |
+          yq -i ".project.version = \"${{ env.VERSION }}\"" pyproject.toml
 
       - name: Generate changelog
         if: env.RUN == 'true'
