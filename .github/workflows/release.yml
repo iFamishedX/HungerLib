@@ -45,7 +45,7 @@ jobs:
         run: |
           VERSION="${{ env.VERSION }}"
 
-          # Regex: major(.minor)?(.step)?(-flag)?
+          # Format: major(.minor)?(.step)?(-flag)?
           if ! [[ "$VERSION" =~ ^([0-9]+)(\.([0-9]+))?(\.([0-9]+))?(-([a-zA-Z0-9]+))?$ ]]; then
             echo "Invalid version format: $VERSION"
             exit 1
@@ -65,10 +65,17 @@ jobs:
             exit 1
           fi
 
+      - name: Install toml-cli
+        if: env.RUN == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install toml-cli
+
       - name: Inject version into pyproject.toml
         if: env.RUN == 'true'
         run: |
-          yq -i ".project.version = \"${{ env.VERSION }}\"" pyproject.toml
+          toml set --toml-path pyproject.toml project.version "${{ env.VERSION }}" > pyproject.new
+          mv pyproject.new pyproject.toml
 
       - name: Generate changelog
         if: env.RUN == 'true'
