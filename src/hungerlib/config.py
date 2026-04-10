@@ -7,7 +7,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from hungerlib.addons.colormap import *
-from hungerlib.panel import Panel
 
 @dataclass
 class Config:
