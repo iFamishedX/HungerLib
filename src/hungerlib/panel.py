@@ -1,11 +1,11 @@
 import requests
 
-from hungerlib.api.command import CommandAPI
-from hungerlib.api.schedule import ScheduleAPI
-from hungerlib.api.filemanager import FileManagerAPI
-from hungerlib.api.backups import BackupsAPI
-from hungerlib.api.databases import DatabasesAPI
-from hungerlib.api.startup import StartupAPI
+from hungerlib.api import CommandAPI
+from hungerlib.api import ScheduleAPI
+from hungerlib.api import FileManagerAPI
+from hungerlib.api import BackupsAPI
+from hungerlib.api import DatabasesAPI
+from hungerlib.api import StartupAPI
 
 
 class Panel:

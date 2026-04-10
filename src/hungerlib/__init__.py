@@ -1,74 +1,33 @@
 from importlib.metadata import version as _pkg_version, PackageNotFoundError
-import importlib
 
+# Package version
 try:
     __version__ = _pkg_version("hungerlib")
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
+# --- Core modules ---
+from .panel import Panel
+from .logger import HungerLogger
 
-# Public API map
-# name -> (module_path, attribute_name or None)
-_EXPORTS = {
-    # core modules
-    "panel": ("panel", None),
-    "config": ("config", None),
-    "logger": ("logger", None),
-    "scheduler": ('scheduler', None),
+# --- API endpoints ---
+from .api.schedule import ScheduleAPI
+from .api.filemanager import FileManagerAPI
+from .api.backups import BackupsAPI
+from .api.databases import DatabasesAPI
+from .api.startup import StartupAPI
 
-    # core module utilities
-    "Panel": ('panel', 'Panel'),
-    'Config': ('config', 'Config'),
-    'HungerLogger': ('logger', 'HungerLogger'),
-    "snapSchedule": ("scheduler", "snapSchedule"),
-    "secsUntil": ("scheduler", "secsUntil"),
-    "minsUntil": ("scheduler", "minsUntil"),
+__all__ = [
+    "__version__",
 
-    # servers
-    "GenericServer": ("servers.generic", "GenericServer"),
-    "MinecraftServer": ("servers.minecraft", "MinecraftServer"),
+    # core utilities
+    "Panel",
+    "HungerLogger",
 
-    # addons 
-    "genericAddons": ("addons.generic", None),
-    "minecraftAddons": ("addons.minecraft", None),
-    "colormap": ("addons.colormap", None),
-
-    # addon utilities
-    "runCountdownEvents": ("addons.generic", "runCountdownEvents"),
-    "validateAll": ("addons.generic", "validateAll"),
-    "waitForOnline": ("addons.generic", "waitForOnline"),
-    "waitForOffline": ("addons.generic", "waitForOffline"),
-    "checkLag": ("addons.minecraft", "checkLag"),
-    "MC_COLOR_MAP": ("addons.colormap", "MC_COLOR_MAP"),
-    "ASCII_COLOR_MAP": ("addons.colormap", "ASCII_COLOR_MAP"),
-
-    # api endpoints
-    "ScheduleAPI": ("api.schedule", "ScheduleAPI"),
-    "FileManagerAPI": ("api.filemanager", "FileManagerAPI"),
-    "BackupsAPI": ("api.backups", "BackupsAPI"),
-    "DatabasesAPI": ("api.databases", "DatabasesAPI"),
-    "StartupAPI": ("api.startup", "StartupAPI")
-
-}
-
-
-__all__ = list(_EXPORTS.keys()) + ["__version__"]
-
-
-# Lazy loader
-def __getattr__(name):
-    if name not in _EXPORTS:
-        raise AttributeError(f"module 'hungerlib' has no attribute '{name}'")
-
-    module_name, attr = _EXPORTS[name]
-    module = importlib.import_module(f"hungerlib.{module_name}")
-
-    # Export module itself
-    if attr is None:
-        globals()[name] = module
-        return module
-
-    # Export attribute from module
-    value = getattr(module, attr)
-    globals()[name] = value
-    return value
+    # API endpoints
+    "ScheduleAPI",
+    "FileManagerAPI",
+    "BackupsAPI",
+    "DatabasesAPI",
+    "StartupAPI",
+]

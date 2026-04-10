@@ -8,7 +8,7 @@ time.tzset()
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.addons.colormap import ASCII_COLOR_MAP, MC_COLOR_MAP
+from hungerlib.addons import ASCII_COLOR_MAP, MC_COLOR_MAP
 
 
 class HungerLogger:

@@ -1,8 +1,8 @@
 run: true
-version: "2.3.6-dev"
+version: "2.4-dev"
 description: |
-  - Fixed syntax errors, typos, misimports, etc
-  - Removed Config system
-  - Removed examples folder
-  - Improved addons/colormap.py
-  - Bump version
+  - Refactor __init__ system
+    - Removed lazy imports in favor of simpler versions
+  - Renamed and moved addons
+    - scheduler.py
+    - mchelpers.py

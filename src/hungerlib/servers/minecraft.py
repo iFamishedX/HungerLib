@@ -2,8 +2,8 @@
 import time
 import re
 import mcrcon
-from hungerlib.panel import Panel
-from hungerlib.servers.generic import GenericServer
+from hungerlib import Panel
+from hungerlib.servers import GenericServer
 
 
 class MinecraftServer(GenericServer):
