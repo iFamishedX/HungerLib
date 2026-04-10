@@ -8,6 +8,7 @@ time.tzset()
 import logging
 from pathlib import Path
 from datetime import datetime
+from hungerlib.addons.colormap import ASCI_COLOR_MAP, MC_COLOR_MAP
 
 
 class HungerLogger:
@@ -36,7 +37,7 @@ class HungerLogger:
         self.name = name
         self.server = server
         self.log_path = Path(f'{log_path}')
-        self.log_destionation_method = log_destination_method
+        self.log_destination_method = log_destination_method
 
         self.console_backspaces = '\b' * console_backspaces
 
@@ -45,6 +46,10 @@ class HungerLogger:
         self.destination_color_map = destination_color_map
         self.mc_color_map = mc_color_map
 
+        self.info_prefix = info_prefix
+        self.warn_prefix = warn_prefix
+        self.error_prefix = error_prefix
+
         self.prefixes = {
             "INFO": self.info_prefix,
             "WARN": self.warn_prefix,
@@ -52,12 +57,12 @@ class HungerLogger:
         }
         
         self.log_path.mkdir(parents=True, exist_ok=True)
-        self.logger = logging.getLogger(loggerName)
+        self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
         self._initializeLogger()
 
     def _initializeLogger(self):
-        logFile = self.logDir / f"{self.loggerName}_{datetime.now().strftime('%Y-%m-%d')}.log"
+        logFile = self.log_path / f"{self.name}_{datetime.now().strftime('%Y-%m-%d')}.log"
 
         if not self.logger.handlers:
             handler = logging.FileHandler(str(logFile))
@@ -97,7 +102,7 @@ class HungerLogger:
             
 
     def _log(self, level, msg, destination, origin, logs):
-        prefix = self.prefixes[level] + f"[{self.loggerName}] "
+        prefix = self.prefixes[level] + f"[{self.name}] "
         full = prefix + msg
 
         if destination:

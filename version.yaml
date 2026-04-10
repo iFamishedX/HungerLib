@@ -1,4 +1,4 @@
 run: true
-version: "2.3.4-dev"
+version: "2.3.5-dev"
 description: |
-  - Fixed syntax error
+  - Fixed syntax errors, typos, misimports, etc
