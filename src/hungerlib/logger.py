@@ -8,7 +8,7 @@ time.tzset()
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.addons.colormap import ASCI_COLOR_MAP, MC_COLOR_MAP
+from hungerlib.addons.colormap import ASCII_COLOR_MAP, MC_COLOR_MAP
 
 
 class HungerLogger:
@@ -24,8 +24,8 @@ class HungerLogger:
 
         # color mapping
         file_color_map=None,
-        origin_color_map=ASCI_COLOR_MAP,
-        destination_color_map=ASCI_COLOR_MAP,
+        origin_color_map=ASCII_COLOR_MAP.as_dict(),
+        destination_color_map=ASCII_COLOR_MAP.as_dict(),
         mc_color_map=MC_COLOR_MAP,
 
         # prefixes

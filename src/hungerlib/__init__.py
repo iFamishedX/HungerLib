@@ -40,7 +40,7 @@ _EXPORTS = {
     "waitForOffline": ("addons.generic", "waitForOffline"),
     "checkLag": ("addons.minecraft", "checkLag"),
     "MC_COLOR_MAP": ("addons.colormap", "MC_COLOR_MAP"),
-    "ASCI_COLOR_MAP": ("addons.colormap", "ASCI_COLOR_MAP"),
+    "ASCII_COLOR_MAP": ("addons.colormap", "ASCII_COLOR_MAP"),
 
     # api endpoints
     "ScheduleAPI": ("api.schedule", "ScheduleAPI"),

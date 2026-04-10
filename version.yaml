@@ -2,3 +2,6 @@ run: true
 version: "2.3.5-dev"
 description: |
   - Fixed syntax errors, typos, misimports, etc
+  - Removed Config system
+  - Removed examples folder
+  - Improved addons/colormap.py
