@@ -19,7 +19,7 @@ class MinecraftServer(GenericServer):
         tpsCommand=None,
         Config
     ):
-        super().__init__(name, panel, server_id, Config)
+        super().__init__(name, panel, server_id, Config=None)
 
         self.server_domain = server_domain or Config.mc_server_domain
         self.server_port = server_port or Config.mc_server_port

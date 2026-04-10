@@ -11,7 +11,7 @@ from hungerlib.config import Config
 
 class Panel:
     """High-level panel object"""
-    def __init__(self, name=None, url=None, api_key=None, Config):
+    def __init__(self, name=None, url=None, api_key=None, Config=None):
         self.Config = Config
 
         # If Config is provided, use its defaults

@@ -1,4 +1,4 @@
 run: true
-version: "2.2.1-dev"
+version: "2.2.2-dev"
 description: |
-  - Bump version for correct PyPI upload
+  - Set Config=None to fix broken imports
