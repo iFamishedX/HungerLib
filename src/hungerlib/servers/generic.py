@@ -5,7 +5,7 @@ from hungerlib.panel import Panel
 class GenericServer:
     def __init__(
         self,
-        name
+        name,
         panel,
         server_id
     ):
