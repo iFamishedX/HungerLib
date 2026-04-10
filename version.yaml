@@ -1,4 +1,4 @@
 run: true
-version: "2.3.2-dev"
+version: "2.3.3-dev"
 description: |
-  - Bump version
+  - Fixed syntax error
