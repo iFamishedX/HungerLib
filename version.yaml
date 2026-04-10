@@ -1,4 +1,14 @@
 run: true
-version: "2.0.5-dev"
+version: "2.1-dev"
 description: |
-  - Added CommandAPI import for panel.py
+  - Simplify comments and file structure
+  - Renamed backspaces to console_backspaces for clarity
+  - Added more uses for config.py
+    - panel.py
+    - servers/_generic.py
+    - servers/minecraft.py
+  - Updated DefaultConfig
+  - Moved Rcon handling from GenericServer to MinecraftServer
+  - Removed unused imports
+  - Added error handling to scripts using DefaultConfig
+  **THIS VERSION IS LIKELY HIGHLY UNSTABLE**

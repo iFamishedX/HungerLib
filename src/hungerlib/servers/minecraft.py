@@ -3,44 +3,37 @@ import time
 import re
 import mcrcon
 from hungerlib.panel import Panel
-from hungerlib.config import Config
+from hungerlib.config import DefaultConfig
 from hungerlib.servers._generic import GenericServer
 
 
 class MinecraftServer(GenericServer):
     def __init__(
         self,
-        name,
-        panel,
-        server_id,
-        server_domain,
-        server_port,
-        Config,
+        name=None,
+        panel=None,
+        server_id=None,
+        server_domain=None,
+        server_port=None,
         rcon_port=None,
         rcon_password=None,
-        tpsCommand='ticks'
+        tpsCommand=None,
+        Config=DefaultConfig
     ):
-        '''
-        A highly configurable server class for Minecraft servers.
-        Supports Rcon.
-        '''
-        super().__init__(
-            name,
-            panel,
-            server_id,
-            server_domain,
-            server_port,
-            rcon_port,
-            rcon_password,
-            Config
-        )
-        self.tpsCommand = tpsCommand
+        super().__init__(name, panel, server_id, Config)
 
-    # ============================================================
-    # RCON HANDLER
-    # ============================================================
+        self.server_domain = server_domain or Config.mc_server_domain
+        self.server_port = server_port or Config.mc_server_port
+        self.rcon_port = rcon_port or Config.mc_rcon_port
+        self.rcon_password = rcon_password or Config.mc_rcon_password
+        self.tpsCommand = tpsCommand or Config.mc_tpsCommand
 
+
+
+    # rcon handler
     def _rcon_send(self, command):
+        if not self.server_domain or not self.rcon_password:
+            return None
         try:
             with mcrcon.MCRcon(self.server_domain, self.rcon_password, port=self.rcon_port) as m:
                 resp1 = m.command(command)
@@ -51,21 +44,13 @@ class MinecraftServer(GenericServer):
             print("RCON error:", e)
             return None
 
-    # ============================================================
-    # PLAYERS
-    # ============================================================
-
+    # getter methods
     def getPlayers(self):
         output = self._rcon_send("list")
         if not output:
             return None
         m = re.search(r"There are (\d+)", output)
         return int(m.group(1)) if m else None
-
-    # ============================================================
-    # TPS PARSER
-    # ============================================================
-
     def getTPS(self, type="raw", rounding=10):
         '''
         This has limitations and is not yet complete. It currently ONLY parses TT20's tps command.
@@ -82,20 +67,15 @@ class MinecraftServer(GenericServer):
         )
         if not m:
             return None
-
         raw, avg, acc = map(float, m.groups())
         table = {"raw": raw, "avg": avg, "acc": acc}
         value = table.get(type, avg)
-
         return round(value, rounding) if rounding else value
 
-    # ============================================================
-    # COMMANDS
-    # ============================================================
 
+    # commands
     def sendConsoleCommand(self, command):
         return self.panel.commands.send(self.server_id, command)
-
     def sendBroadcast(self, message):
         translated = self._translate_mc_colors(message)
         safe = translated.replace('"', '\\"')
