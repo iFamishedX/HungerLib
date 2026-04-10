@@ -8,7 +8,7 @@ class GenericServer:
         name=None,
         panel=None,
         server_id=None,
-        Config
+        Config=None
     ):
         '''Generic server class'''
         self.Config = Config

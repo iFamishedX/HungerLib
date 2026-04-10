@@ -17,7 +17,7 @@ class MinecraftServer(GenericServer):
         rcon_port=None,
         rcon_password=None,
         tpsCommand=None,
-        Config=None,
+        Config=None
     ):
         super().__init__(name, panel, server_id, Config)
 
