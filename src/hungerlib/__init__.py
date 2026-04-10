@@ -25,19 +25,19 @@ _EXPORTS = {
     "minsUntil": ("scheduler", "minsUntil"),
 
     # servers
-    "GenericServer": ("servers._generic", "GenericServer"),
+    "GenericServer": ("servers.generic", "GenericServer"),
     "MinecraftServer": ("servers.minecraft", "MinecraftServer"),
 
     # addons 
-    "genericAddons": ("addons._generic", None),
+    "genericAddons": ("addons.generic", None),
     "minecraftAddons": ("addons.minecraft", None),
     "colormap": ("addons.colormap", None),
 
     # addon utilities
-    "runCountdownEvents": ("addons._generic", "runCountdownEvents"),
-    "validateAll": ("addons._generic", "validateAll"),
-    "waitForOnline": ("addons._generic", "waitForOnline"),
-    "waitForOffline": ("addons._generic", "waitForOffline"),
+    "runCountdownEvents": ("addons.generic", "runCountdownEvents"),
+    "validateAll": ("addons.generic", "validateAll"),
+    "waitForOnline": ("addons.generic", "waitForOnline"),
+    "waitForOffline": ("addons.generic", "waitForOffline"),
     "checkLag": ("addons.minecraft", "checkLag"),
     "MC_COLOR_MAP": ("addons.colormap", "MC_COLOR_MAP"),
     "ASCI_COLOR_MAP": ("addons.colormap", "ASCI_COLOR_MAP"),

@@ -10,27 +10,6 @@ from hungerlib.addons.colormap import *
 
 @dataclass
 class Config:
-    # panel defaults
-    panel_name: str | None = None
-    panel_url: str | None = None
-    panel_api_key: str | None = None
-
-    # generic server defaults
-    gs_name: str | None = None
-    gs_panel_url: str | None = None
-    gs_panel_api_key: str | None = None
-    gs_server_id: str | None = None
-
-    # minecraft server defaults
-    mc_name: str | None = None
-    mc_panel_url: str | None = None
-    mc_panel_api_key: str | None = None
-    mc_server_id: str | None = None
-    mc_server_domain: str | None = None
-    mc_server_port: int = 25565
-    mc_rcon_port: int = 25575
-    mc_rcon_password: str | None = None
-    mc_tpsCommand: str = 'tt20 tps'
 
     # Color maps
     file_color_map: dict | None = None
@@ -48,4 +27,4 @@ class Config:
     log_path: Path = Path("/home/container/logs")
     log_destination_method: str = 'rcon'
 
-_internal_config = Config
+_internal_config = Config()

@@ -3,29 +3,28 @@ import time
 import re
 import mcrcon
 from hungerlib.panel import Panel
-from hungerlib.servers._generic import GenericServer
+from hungerlib.servers.generic import GenericServer
 
 
 class MinecraftServer(GenericServer):
     def __init__(
         self,
-        name=None,
-        panel=None,
-        server_id=None,
-        server_domain=None,
-        server_port=None,
-        rcon_port=None,
-        rcon_password=None,
-        tpsCommand=None,
-        Config=None
+        name,
+        panel,
+        server_id,
+        server_domain,
+        server_port=25565,
+        rcon_port=25575,
+        rcon_password,
+        tpsCommand='tt20 tps'
     ):
-        super().__init__(name, panel, server_id, Config)
+        super().__init__(name, panel, server_id)
 
-        self.server_domain = server_domain or Config.mc_server_domain
-        self.server_port = server_port or Config.mc_server_port
-        self.rcon_port = rcon_port or Config.mc_rcon_port
-        self.rcon_password = rcon_password or Config.mc_rcon_password
-        self.tpsCommand = tpsCommand or Config.mc_tpsCommand
+        self.server_domain = server_domain
+        self.server_port = server_port
+        self.rcon_port = rcon_port
+        self.rcon_password = rcon_password
+        self.tpsCommand = tpsCommand
 
 
 

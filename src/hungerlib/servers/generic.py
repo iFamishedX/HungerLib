@@ -5,27 +5,15 @@ from hungerlib.panel import Panel
 class GenericServer:
     def __init__(
         self,
-        name=None,
-        panel=None,
-        server_id=None,
-        Config=None
+        name='Unnamed Server',
+        panel,
+        server_id
     ):
         '''Generic server class'''
-        self.Config = Config
 
-        # name
-        self.name = name or Config.gs_name or "Unnamed Server"
-
-        # panel (must be explicit)
+        self.name = name
         self.panel = panel
-        if not isinstance(self.panel, Panel):
-            raise TypeError("GenericServer requires a Panel instance")
-
-        # server_id (must be explicit or valid default)
-        self.server_id = server_id or Config.gs_server_id
-        if not isinstance(self.server_id, str):
-            raise TypeError("GenericServer requires a server_id string")
-
+        self.server_id = server_id
         self._cached_resources = None
 
     # internal helpers

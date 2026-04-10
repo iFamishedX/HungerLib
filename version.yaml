@@ -1,4 +1,6 @@
 run: true
-version: "2.2.4-dev"
+version: "2.3-dev"
 description: |
-  - Set Config=None to fix broken imports (again)
+  - Added missing parentheses in config.py
+  - Simplified config system
+  **This is most likely VERY broken, do not use in production**

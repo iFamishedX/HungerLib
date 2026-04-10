@@ -6,18 +6,14 @@ from hungerlib.api.filemanager import FileManagerAPI
 from hungerlib.api.backups import BackupsAPI
 from hungerlib.api.databases import DatabasesAPI
 from hungerlib.api.startup import StartupAPI
-from hungerlib.config import Config
 
 
 class Panel:
     """High-level panel object"""
-    def __init__(self, name=None, url=None, api_key=None, Config=None):
-        self.Config = Config
-
-        # If Config is provided, use its defaults
-        self.name = name or Config.panel_name
-        self.url = (url or Config.panel_url).rstrip("/")
-        self.api_key = api_key or Config.panel_api_key 
+    def __init__(self, name, url, api_key):
+        self.name = name
+        self.url = url.rstrip("/")
+        self.api_key = api_key
 
         # API modules
         self.schedules = ScheduleAPI(self)
