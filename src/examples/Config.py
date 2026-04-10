@@ -2,7 +2,7 @@ from hungerlib import Config
 from pathlib import Path
 from hungerlib.addons.colormap import ASCI_COLOR_MAP, MC_COLOR_MAP
 
-DefaultConfig = Config(
+ExampleConfig = Config(
     # --- Panel settings ---
     panel_name="My Panel",
     panel_url="https://example.com",

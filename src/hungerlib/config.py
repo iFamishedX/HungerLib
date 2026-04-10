@@ -47,4 +47,5 @@ class Config:
     # Logging
     log_path: Path = Path("/home/container/logs")
     log_destination_method: str = 'rcon'
-    
+
+_internal_config = Config

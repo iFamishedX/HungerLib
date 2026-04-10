@@ -6,12 +6,12 @@ from hungerlib.api.filemanager import FileManagerAPI
 from hungerlib.api.backups import BackupsAPI
 from hungerlib.api.databases import DatabasesAPI
 from hungerlib.api.startup import StartupAPI
-from hungerlib.config import DefaultConfig
+from hungerlib.config import Config
 
 
 class Panel:
     """High-level panel object"""
-    def __init__(self, name=None, url=None, api_key=None, Config=DefaultConfig):
+    def __init__(self, name=None, url=None, api_key=None, Config):
         self.Config = Config
 
         # If Config is provided, use its defaults

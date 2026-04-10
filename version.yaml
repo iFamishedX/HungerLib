@@ -1,8 +1,4 @@
 run: true
 version: "2.2-dev"
 description: |
-  - Renamed tests/ to examples/
-  - Removed DefaultConfig class
-  - Created examples/Config.py
-  - Removed ability to change authorization headers (correct headers are already built-in)
-  - Updated __init__.py
+  - Fixed DefaultConfig misimports

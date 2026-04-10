@@ -3,7 +3,6 @@ import time
 import re
 import mcrcon
 from hungerlib.panel import Panel
-from hungerlib.config import DefaultConfig
 from hungerlib.servers._generic import GenericServer
 
 
@@ -18,7 +17,7 @@ class MinecraftServer(GenericServer):
         rcon_port=None,
         rcon_password=None,
         tpsCommand=None,
-        Config=DefaultConfig
+        Config
     ):
         super().__init__(name, panel, server_id, Config)
 

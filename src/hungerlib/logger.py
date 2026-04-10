@@ -15,7 +15,7 @@ class HungerLogger:
     def __init__(
         self,
         loggerName,
-        Config=DefaultConfig,
+        Config,
         console_backspaces=0,
         logDir=None,
         server=None
@@ -23,7 +23,6 @@ class HungerLogger:
         '''
         HungerLib's core logger
         Uses hungerlib.config for the Config system.
-        If no Config class is defined, DefaultConfig is used.
         '''
         self.loggerName = loggerName
         self.console_backspaces = '\b' * console_backspaces

@@ -1,6 +1,5 @@
 # Universal server class
 from hungerlib.panel import Panel
-from hungerlib.config import DefaultConfig
 
 
 class GenericServer:
@@ -9,7 +8,7 @@ class GenericServer:
         name=None,
         panel=None,
         server_id=None,
-        Config=DefaultConfig
+        Config
     ):
         '''Generic server class'''
         self.Config = Config
