@@ -1,4 +1,4 @@
 run: true
-version: "2.2-dev"
+version: "2.2.1-dev"
 description: |
-  - Fixed DefaultConfig misimports
+  - Bump version for correct PyPI upload
