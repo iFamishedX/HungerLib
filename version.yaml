@@ -2,3 +2,4 @@ run: true
 version: "2.3.1-dev"
 description: |
   - Fixed servers/minecraft.py
+  - Removed config requirements

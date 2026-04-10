@@ -8,37 +8,50 @@ time.tzset()
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.config import *
 
 
 class HungerLogger:
     def __init__(
         self,
-        loggerName,
-        Config,
+        name,
+        server,
+        log_path,
+        log_destination_method='rcon',
+
+        # backspaces
         console_backspaces=0,
-        logDir=None,
-        server=None
+
+        # color mapping
+        file_color_map=None,
+        origin_color_map=ASCI_COLOR_MAP,
+        destination_color_map=ASCI_COLOR_MAP,
+        mc_color_map=MC_COLOR_MAP,
+
+        # prefixes
+        info_prefix='<white>[INFO]: ',
+        warn_prefix='<yellow>[WARN]: ',
+        error_prefix='<red>[ERROR]: '
     ):
-        '''
-        HungerLib's core logger
-        Uses hungerlib.config for the Config system.
-        '''
-        self.loggerName = loggerName
-        self.console_backspaces = '\b' * console_backspaces
-        self.config = Config
+
+        self.name = name
         self.server = server
+        self.log_path = Path(f'{log_path}')
+        self.log_destionation_method = log_destination_method
+
+        self.console_backspaces = '\b' * console_backspaces
+
+        self.file_color_map = file_color_map
+        self.origin_color_map = origin_color_map
+        self.destination_color_map = destination_color_map
+        self.mc_color_map = mc_color_map
 
         self.prefixes = {
-            "INFO": self.config.info_prefix,
-            "WARN": self.config.warn_prefix,
-            "ERROR": self.config.error_prefix
+            "INFO": self.info_prefix,
+            "WARN": self.warn_prefix,
+            "ERROR": self.error_prefix
         }
         
-        self.log_destination_method = self.config.log_destination_method
-
-        self.logDir = Path(logDir) if logDir else self.config.log_path
-        self.logDir.mkdir(parents=True, exist_ok=True)
+        self.log_path.mkdir(parents=True, exist_ok=True)
         self.logger = logging.getLogger(loggerName)
         self.logger.setLevel(logging.DEBUG)
         self._initializeLogger()
@@ -65,9 +78,9 @@ class HungerLogger:
         return msg
 
     def _strip_colors(self, msg):
-        if not self.config.file_color_map:
+        if not self.file_color_map:
             return msg
-        for tag in self.config.file_color_map.keys():
+        for tag in self.file_color_map.keys():
             msg = msg.replace(tag, "")
         return msg
 
@@ -76,7 +89,7 @@ class HungerLogger:
             return
         if not hasattr(self.server, "_rcon_send"):
             return
-        colored = self._apply_colors(msg, self.config.destination_color_map)
+        colored = self._apply_colors(msg, self.destination_color_map)
         if self.log_destination_method == 'rcon':
             self.server._rcon_send(f'logtellraw targetless \"{self.console_backspaces}{colored}\"')
         if self.log_destination_method == 'api':
@@ -91,7 +104,7 @@ class HungerLogger:
             self._destinationLog(full)
 
         if origin:
-            colored = self._apply_colors(full + "<reset>", self.config.origin_color_map)
+            colored = self._apply_colors(full + "<reset>", self.origin_color_map)
             print(colored)
 
         if logs:
