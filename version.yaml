@@ -1,5 +1,8 @@
 run: true
-version: "2.1.2-dev"
+version: "2.2-dev"
 description: |
-  - Added Config class import in __init__.py
-  **THIS VERSION IS LIKELY HIGHLY UNSTABLE**
+  - Renamed tests/ to examples/
+  - Removed DefaultConfig class
+  - Created examples/Config.py
+  - Removed ability to change authorization headers (correct headers are already built-in)
+  - Updated __init__.py

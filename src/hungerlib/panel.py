@@ -34,10 +34,6 @@ class Panel:
     # http core
     @property
     def headers(self):
-        if self.Config and self.Config.panel_headers:
-            return self.Config.panel_headers
-
-
         return {
             "Authorization": f"Bearer {self.api_key}",
             "Accept": "application/json",

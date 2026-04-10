@@ -14,7 +14,6 @@ class Config:
     panel_name: str | None = None
     panel_url: str | None = None
     panel_api_key: str | None = None
-    panel_headers: dict | None = None
 
     # generic server defaults
     gs_name: str | None = None
@@ -45,8 +44,7 @@ class Config:
     error_prefix: str = '<red>[ERROR]: '
     console_backspaces: int = 8
 
+    # Logging
     log_path: Path = Path("/home/container/logs")
     log_destination_method: str = 'rcon'
-
-# built-in default configuration
-DefaultConfig = Config()
+    
