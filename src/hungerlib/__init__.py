@@ -19,6 +19,7 @@ _EXPORTS = {
     # core module utilities
     "Panel": ('panel', 'Panel'),
     'DefaultConfig': ('config', 'DefaultConfig'),
+    'Config': ('config', 'Config'),
     'HungerLogger': ('logger', 'HungerLogger'),
     "snapSchedule": ("scheduler", "snapSchedule"),
     "secsUntil": ("scheduler", "secsUntil"),

@@ -1,5 +1,5 @@
 run: true
-version: "2.1.1-dev"
+version: "2.1.2-dev"
 description: |
-  - Removed panel import in config.py
+  - Added Config class import in __init__.py
   **THIS VERSION IS LIKELY HIGHLY UNSTABLE**
