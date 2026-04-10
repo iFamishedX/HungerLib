@@ -1,6 +1,4 @@
 run: true
-version: "2.3-dev"
+version: "2.3.1-dev"
 description: |
-  - Added missing parentheses in config.py
-  - Simplified config system
-  **This is most likely VERY broken, do not use in production**
+  - Fixed servers/minecraft.py

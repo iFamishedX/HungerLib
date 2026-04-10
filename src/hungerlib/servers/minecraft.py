@@ -13,8 +13,8 @@ class MinecraftServer(GenericServer):
         panel,
         server_id,
         server_domain,
-        server_port=25565,
-        rcon_port=25575,
+        server_port,
+        rcon_port,
         rcon_password,
         tpsCommand='tt20 tps'
     ):
