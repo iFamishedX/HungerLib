@@ -1,8 +1,4 @@
 run: true
-version: "2.4-dev"
+version: "2.4.1-dev"
 description: |
-  - Refactor __init__ system
-    - Removed lazy imports in favor of simpler versions
-  - Renamed and moved addons
-    - scheduler.py
-    - mchelpers.py
+  - Added schedule state helper functions

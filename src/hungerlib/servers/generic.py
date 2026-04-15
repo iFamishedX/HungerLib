@@ -162,6 +162,14 @@ class GenericServer:
     def runSchedule(self, schedule_id):
         return self.panel.schedules.run(self.server_id, schedule_id)
 
+    def enableSchedule(self, schedule_id):
+        payload = {"is_active": True}
+        return self.updateSchedule(schedule_id, payload)
+    def disableSchedule(self, schedule_id):
+        payload = {"is_active": False}
+        return self.updateSchedule(schedule_id, payload)
+
+
 
     # health snapshot
     def snapshot(self):
