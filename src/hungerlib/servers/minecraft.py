@@ -4,6 +4,7 @@ import re
 import mcrcon
 from hungerlib import Panel
 from hungerlib.servers import GenericServer
+from hungerlib.addons import MC_COLOR_MAP, ASCII_COLOR_MAP
 
 
 class MinecraftServer(GenericServer):
@@ -16,7 +17,10 @@ class MinecraftServer(GenericServer):
         server_port,
         rcon_port,
         rcon_password,
-        tpsCommand='tt20 tps'
+        mc_color_map=MC_COLOR_MAP,
+        ansii_color_map=ANSII_COLOR_MAP,
+
+        tpsCommand='tt20 tps',
     ):
         super().__init__(name, panel, server_id)
 
@@ -24,6 +28,8 @@ class MinecraftServer(GenericServer):
         self.server_port = server_port
         self.rcon_port = rcon_port
         self.rcon_password = rcon_password
+        self.mc_color_map = mc_color_map
+        self.ansii_color_map = ansii_color_map
         self.tpsCommand = tpsCommand
 
 

@@ -1,5 +1,4 @@
 run: true
-version: "2.5.1-dev"
+version: "2.5.2-dev"
 description: |
-  - Updated GenericServer's color_map import
-  - Set default color_map to MC_COLOR_MAP from hungerlib.addons
+  - Fixed color_map imports
