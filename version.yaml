@@ -1,4 +1,7 @@
 run: true
-version: "2.4.1-dev"
+version: "2.5-dev"
 description: |
-  - Added schedule state helper functions
+  - Added getSchedule() helper function
+  - Removed checkLag addon
+  - Added Snapshot addon
+  - Added converters.py addon

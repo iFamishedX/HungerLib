@@ -170,6 +170,38 @@ class GenericServer:
         return self.updateSchedule(schedule_id, payload)
 
 
+    def getSchedule(self, schedule_id: int):
+        """
+        Returns a dict containing all schedule attributes for the given schedule_id.
+        Works with raw ScheduleAPI responses.
+        """
+        resp = self.panel.schedules.list(self.server_id)
+        data = resp.json()
+        for item in data.get("data", []):
+            attr = item.get("attributes", {})
+            if attr.get("id") == schedule_id:
+                return {
+                    "id": attr.get("id"),
+                    "name": attr.get("name"),
+                    "description": attr.get("description"),
+                    "is_active": attr.get("is_active"),
+                    "cron": attr.get("cron"),
+                    "minute": attr.get("cron", {}).get("minute"),
+                    "hour": attr.get("cron", {}).get("hour"),
+                    "day_of_month": attr.get("cron", {}).get("day_of_month"),
+                    "month": attr.get("cron", {}).get("month"),
+                    "day_of_week": attr.get("cron", {}).get("day_of_week"),
+                    "next_run_at": attr.get("next_run_at"),
+                    "last_run_at": attr.get("last_run_at"),
+                    "only_when_online": attr.get("only_when_online"),
+                    "is_processing": attr.get("is_processing"),
+                    "created_at": attr.get("created_at"),
+                    "updated_at": attr.get("updated_at"),
+                    "tasks": attr.get("relationships", {}).get("tasks", {}).get("data", [])
+                }
+        return None
+
+
 
     # health snapshot
     def snapshot(self):
