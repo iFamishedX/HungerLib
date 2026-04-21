@@ -1,7 +1,5 @@
 run: true
-version: "2.5-dev"
+version: "2.5.1-dev"
 description: |
-  - Added getSchedule() helper function
-  - Removed checkLag addon
-  - Added Snapshot addon
-  - Added converters.py addon
+  - Updated GenericServer's color_map import
+  - Set default color_map to MC_COLOR_MAP from hungerlib.addons

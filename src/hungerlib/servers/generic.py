@@ -1,5 +1,6 @@
 # Universal server class
 from hungerlib import Panel
+from hungerlib.addons import MC_COLOR_MAP
 
 
 class GenericServer:
@@ -7,7 +8,8 @@ class GenericServer:
         self,
         name,
         panel,
-        server_id
+        server_id,
+        color_map=MC_COLOR_MAP
     ):
         '''Generic server class'''
 
@@ -18,7 +20,7 @@ class GenericServer:
 
     # internal helpers
     def _translate_mc_colors(self, msg):
-        for tag, code in self.Config.mc_color_map.items():
+        for tag, code in self.color_map.items():
             msg = msg.replace(tag, code)
         return msg
 
