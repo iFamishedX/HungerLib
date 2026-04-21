@@ -18,7 +18,7 @@ class MinecraftServer(GenericServer):
         rcon_port,
         rcon_password,
         mc_color_map=MC_COLOR_MAP,
-        ansii_color_map=ANSII_COLOR_MAP,
+        ascii_color_map=ASCII_COLOR_MAP,
 
         tpsCommand='tt20 tps',
     ):
@@ -29,7 +29,7 @@ class MinecraftServer(GenericServer):
         self.rcon_port = rcon_port
         self.rcon_password = rcon_password
         self.mc_color_map = mc_color_map
-        self.ansii_color_map = ansii_color_map
+        self.ascii_color_map = ascii_color_map
         self.tpsCommand = tpsCommand
 
 

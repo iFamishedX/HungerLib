@@ -1,6 +1,6 @@
 # Universal server class
 from hungerlib import Panel
-from hungerlib.addons import MC_COLOR_MAP, ANSII_COLOR_MAP
+from hungerlib.addons import MC_COLOR_MAP, ASCII_COLOR_MAP
 
 
 class GenericServer:
@@ -10,7 +10,7 @@ class GenericServer:
         panel,
         server_id,
         mc_color_map=MC_COLOR_MAP,
-        ansii_color_map=ANSII_COLOR_MAP
+        ascii_color_map=ASCII_COLOR_MAP
     ):
         '''Generic server class'''
 
@@ -18,7 +18,7 @@ class GenericServer:
         self.panel = panel
         self.server_id = server_id
         self.mc_color_map = mc_color_map
-        self.ansii_color_map = ansii_color_map
+        self.ascii_color_map = ascii_color_map
         self._cached_resources = None
 
     # internal helpers
