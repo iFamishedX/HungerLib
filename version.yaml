@@ -1,4 +1,4 @@
 run: true
-version: "2.5.4-dev"
+version: "2.5.5-dev"
 description: |
   - Patch GenericServer and MinecraftServer to correctly support dicts
