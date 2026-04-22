@@ -1,15 +1,12 @@
 class Snapshot:
-    def __init__(self, Server, gib=False):
+    def __init__(self, Server, rounding=2, gb=False):
         self.Server = Server
-        g = 1
-        if gib:
-            g = 1024
 
         # generic
-        self.ram = round(self.Server.getRAM() / g, 2)
-        self.cpu = round(self.Server.getCPU(), 2)
-        self.network_in = round(self.Server.getNetworkIn() / g, 2)
-        self.network_out = round(self.Server.getNetworkOut() / g, 2)
+        self.ram = self.Server.getRAM(rounding, gb)
+        self.cpu = self.Server.getCPU()
+        self.network_in = self.Server.getNetworkIn(rounding, gb)
+        self.network_out = self.Server.getNetworkOut(rounding, gb)
         self.uptime = self.Server.getUptime()
         self.uptime_formatted = self.Server.getUptime(True)
 
