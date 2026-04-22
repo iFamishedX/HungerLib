@@ -4,6 +4,7 @@ from .snapshot import Snapshot
 from .scheduler import snapSchedule, secsUntil, minsUntil
 from .validation import validateAll
 from .converters import *
+from .clear import clearTerminal
 
 __all__ = [
     'ColorMap',
@@ -22,4 +23,5 @@ __all__ = [
     'gb_mb',
     'mib_gib',
     'gib_mib',
+    'clearTerminal',
 ]

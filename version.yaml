@@ -1,4 +1,4 @@
 run: true
-version: "2.6.3-dev"
+version: "2.7"
 description: |
-  - snapshot.py now has a rounding argument
+  - Added clear addon
