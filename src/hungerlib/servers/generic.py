@@ -12,14 +12,16 @@ class GenericServer:
         mc_color_map=MC_COLOR_MAP,
         ascii_color_map=ASCII_COLOR_MAP
     ):
-        '''Generic server class'''
-
         self.name = name
         self.panel = panel
         self.server_id = server_id
-        self.mc_color_map = mc_color_map
-        self.ascii_color_map = ascii_color_map
+
+        # Convert ColorMap → dict once
+        self.mc_color_map = mc_color_map.as_dict()
+        self.ascii_color_map = ascii_color_map.as_dict()
+
         self._cached_resources = None
+
 
     # internal helpers
     def _translate_mc_colors(self, msg):
