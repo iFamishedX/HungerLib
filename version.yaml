@@ -1,4 +1,4 @@
 run: true
-version: "2.6.1-dev"
+version: "2.6.2-dev"
 description: |
-  - Gb argument now rounds values in snapshot.py
+  - Gb argument now ACTUALLY rounds values in snapshot.py
