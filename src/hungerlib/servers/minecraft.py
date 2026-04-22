@@ -19,17 +19,33 @@ class MinecraftServer(GenericServer):
         rcon_password,
         mc_color_map=MC_COLOR_MAP,
         ascii_color_map=ASCII_COLOR_MAP,
-
         tpsCommand='tt20 tps',
     ):
-        super().__init__(name, panel, server_id)
+        mc_map = (
+            mc_color_map.as_dict()
+            if hasattr(mc_color_map, "as_dict")
+            else mc_color_map
+        )
+        ascii_map = (
+            ascii_color_map.as_dict()
+            if hasattr(ascii_color_map, "as_dict")
+            else ascii_color_map
+        )
 
+        # Pass normalized maps to GenericServer
+        super().__init__(
+            name,
+            panel,
+            server_id,
+            mc_color_map=mc_map,
+            ascii_color_map=ascii_map
+        )
+
+        # Minecraft-specific fields
         self.server_domain = server_domain
         self.server_port = server_port
         self.rcon_port = rcon_port
         self.rcon_password = rcon_password
-        self.mc_color_map = mc_color_map
-        self.ascii_color_map = ascii_color_map
         self.tpsCommand = tpsCommand
 
 

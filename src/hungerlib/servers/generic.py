@@ -16,9 +16,18 @@ class GenericServer:
         self.panel = panel
         self.server_id = server_id
 
-        # Convert ColorMap → dict once
-        self.mc_color_map = mc_color_map.as_dict()
-        self.ascii_color_map = ascii_color_map.as_dict()
+        # Normalize maps
+        self.mc_color_map = (
+            mc_color_map.as_dict()
+            if hasattr(mc_color_map, "as_dict")
+            else mc_color_map
+        )
+
+        self.ascii_color_map = (
+            ascii_color_map.as_dict()
+            if hasattr(ascii_color_map, "as_dict")
+            else ascii_color_map
+        )
 
         self._cached_resources = None
 
