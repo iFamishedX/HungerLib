@@ -6,10 +6,10 @@ class Snapshot:
             g = 1024
 
         # generic
-        self.ram = self.Server.getRAM() / g
+        self.ram = self.Server.getRAM() // g
         self.cpu = self.Server.getCPU()
-        self.network_in = self.Server.getNetworkIn() / g
-        self.network_out = self.Server.getNetworkOut() / g
+        self.network_in = self.Server.getNetworkIn() // g
+        self.network_out = self.Server.getNetworkOut() // g
         self.uptime = self.Server.getUptime()
         self.uptime_formatted = self.Server.getUptime(True)
 
