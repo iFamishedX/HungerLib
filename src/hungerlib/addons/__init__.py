@@ -5,6 +5,7 @@ from .scheduler import snapSchedule, secsUntil, minsUntil
 from .validation import validateAll
 from .converters import *
 from .clear import clearTerminal
+from .configloader import *
 
 __all__ = [
     'ColorMap',
@@ -24,4 +25,7 @@ __all__ = [
     'mib_gib',
     'gib_mib',
     'clearTerminal',
+    'ensure_yaml',
+    'load_yaml',
+    'map_to_dataclass',
 ]

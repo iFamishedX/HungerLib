@@ -1,4 +1,4 @@
 run: true
-version: "2.8"
+version: "2.8.1"
 description: |
-  - Added yaml parser
+  - Fixed addon imports
