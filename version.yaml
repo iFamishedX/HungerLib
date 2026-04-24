@@ -1,4 +1,4 @@
 run: true
-version: "2.8.2"
+version: "2.8.3"
 description: |
-  - Fixed broken file
+  - Bump version
