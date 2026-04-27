@@ -1,5 +1,4 @@
 run: true
-version: "2.11.1"
+version: "2.11.2"
 description: |
-  - Rewrote configloader addon
-  - Removed configmap addon
+  - Bump version
