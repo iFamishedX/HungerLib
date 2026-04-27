@@ -33,4 +33,5 @@ __all__ = [
     '_CONFIG_CLASSES',
     '_resolve_schema_for_file',
     'load_or_default',
+    'flatten_nested'
 ]

@@ -1,5 +1,4 @@
 run: true
-version: "2.10.1"
+version: "2.11"
 description: |
-  - Fixed minor typo
-  - Fixed build error
+  - Added flatten_nested to configloader addon

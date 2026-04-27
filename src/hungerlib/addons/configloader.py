@@ -63,3 +63,28 @@ def validate_required_keys(
         if key not in mapping:
             errors.append(f"[{context}] Missing required key: '{key}'")
     return errors
+
+def flatten_nested(data: dict, parent_key: str = "", sep: str = "_") -> dict:
+    """
+    Recursively flattens a nested dict into a single-level dict.
+    Section names are ignored; only leaf keys matter.
+
+    Example:
+        {"panel": {"name": "X", "url": "Y"}}
+    becomes:
+        {"name": "X", "url": "Y"}
+
+    This matches the user's preference for leaf-key-only configs.
+    """
+    flat = {}
+
+    for key, value in data.items():
+        # Always ignore parent section names
+        new_key = key if parent_key == "" else key
+
+        if isinstance(value, dict):
+            flat.update(flatten_nested(value, new_key, sep=sep))
+        else:
+            flat[new_key] = value
+
+    return flat
