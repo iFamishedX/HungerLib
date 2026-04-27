@@ -4,10 +4,8 @@ from typing import Any, Dict, Type
 
 from .configloader import load_yaml, flatten_nested, map_to_dataclass
 
-# BASE_DIR = project root where user configs live
-# PACKAGE_DIR = hungerlib package root
-from hungerlib.paths import BASE_DIR, PACKAGE_DIR
-
+BASE_DIR = os.getcwd()
+PACKAGE_DIR = os.path.dirname(__file__)
 
 # ---------------------------------------------------------------------------
 # Schema Resolver

@@ -1,4 +1,4 @@
 run: true
-version: "2.11"
+version: "2.11.1"
 description: |
-  - Added flatten_nested to configloader addon
+  - Fixed paths
