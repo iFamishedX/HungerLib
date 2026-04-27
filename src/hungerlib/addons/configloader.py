@@ -1,90 +1,73 @@
 import os
 import yaml
-from dataclasses import fields, is_dataclass
-from typing import Any, Dict, Iterable
+import importlib
+from dataclasses import fields
 
 
-def ensure_yaml(path: str, default: Dict[str, Any]):
-    """
-    Ensure a YAML file exists at `path`.
-    If missing, write `default` to it.
-    """
-    if not os.path.exists(path):
-        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        with open(path, "w") as f:
-            yaml.dump(default, f, sort_keys=False)
-
-
-def write_default_yaml(path: str, default: Dict[str, Any], overwrite: bool = False):
-    """
-    Explicitly write default YAML to `path`.
-    If overwrite=False and file exists, do nothing.
-    """
-    if not overwrite and os.path.exists(path):
-        return
-    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    with open(path, "w") as f:
-        yaml.dump(default, f, sort_keys=False)
-
-
-def load_yaml(path: str) -> Dict[str, Any]:
-    """
-    Load a YAML file into a dict. Returns {} if empty.
-    """
+def load_yaml(path: str) -> dict:
     with open(path, "r") as f:
-        data = yaml.safe_load(f)
-    return data or {}
+        return yaml.safe_load(f) or {}
 
 
-def map_to_dataclass(mapping: Dict[str, Any], schema: type):
+def flatten_nested(data: dict) -> dict:
     """
-    Map a dict into a dataclass, filling missing fields with defaults.
+    Flatten nested YAML into leaf-only keys.
+    Section names are ignored.
     """
-    if not is_dataclass(schema):
-        raise TypeError("schema must be a dataclass type")
+    flat = {}
+    for key, value in data.items():
+        if isinstance(value, dict):
+            flat.update(flatten_nested(value))
+        else:
+            flat[key] = value
+    return flat
 
+
+def map_to_dataclass(data: dict, schema):
+    """
+    Map flattened dict → dataclass instance.
+    Missing fields use dataclass defaults.
+    """
     kwargs = {}
     for f in fields(schema):
-        kwargs[f.name] = mapping.get(f.name, f.default)
+        if f.name in data:
+            kwargs[f.name] = data[f.name]
     return schema(**kwargs)
 
 
-def validate_required_keys(
-    mapping: Dict[str, Any],
-    required: Iterable[str],
-    context: str,
-) -> list[str]:
+def loadConfig(path: str, default_path: str, schema):
     """
-    Validate that all required keys exist in mapping.
-    Returns list of error strings (empty if OK).
+    Load a single YAML config file with fallback to defaults inside the schema's package.
+
+    path          = runtime config path (e.g. 'config/watcher.yaml')
+    default_path  = path inside the schema's package (e.g. '/defaultconfigs/watcher.yaml')
+    schema        = dataclass type
     """
-    errors = []
-    for key in required:
-        if key not in mapping:
-            errors.append(f"[{context}] Missing required key: '{key}'")
-    return errors
 
-def flatten_nested(data: dict, parent_key: str = "", sep: str = "_") -> dict:
-    """
-    Recursively flattens a nested dict into a single-level dict.
-    Section names are ignored; only leaf keys matter.
+    # 1. Resolve runtime config path
+    abs_path = os.path.abspath(path)
+    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
 
-    Example:
-        {"panel": {"name": "X", "url": "Y"}}
-    becomes:
-        {"name": "X", "url": "Y"}
+    # 2. Resolve default path relative to the schema's package
+    module = importlib.import_module(schema.__module__)
+    schema_file = os.path.abspath(module.__file__)
 
-    This matches the user's preference for leaf-key-only configs.
-    """
-    flat = {}
+    # schema_file = .../serverwatcher/configmap/configclasses/watcher.py
+    # package_dir = .../serverwatcher/configmap
+    package_dir = os.path.dirname(os.path.dirname(schema_file))
 
-    for key, value in data.items():
-        # Always ignore parent section names
-        new_key = key if parent_key == "" else key
+    abs_default = os.path.join(package_dir, default_path.lstrip("/"))
 
-        if isinstance(value, dict):
-            flat.update(flatten_nested(value, new_key, sep=sep))
+    # 3. Hydrate missing runtime config
+    if not os.path.exists(abs_path):
+        if os.path.exists(abs_default):
+            with open(abs_default, "r") as src, open(abs_path, "w") as dst:
+                dst.write(src.read())
         else:
-            flat[new_key] = value
+            with open(abs_path, "w") as f:
+                f.write("# This file doesn't have a default!\n")
 
-    return flat
+    # 4. Load + flatten + map
+    raw = load_yaml(abs_path)
+    flat = flatten_nested(raw)
+    return map_to_dataclass(flat, schema)

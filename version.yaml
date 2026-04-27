@@ -1,4 +1,5 @@
 run: true
 version: "2.11.1"
 description: |
-  - Fixed paths
+  - Rewrote configloader addon
+  - Removed configmap addon
