@@ -1,4 +1,4 @@
 run: true
-version: "2.9"
+version: "2.10"
 description: |
-  - Updated configloader
+  - Added configmap addon (NOT the same as configloader)
