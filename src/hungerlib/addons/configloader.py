@@ -23,25 +23,10 @@ def flatten_nested(data: dict) -> dict:
     return flat
 
 
-def map_to_dataclass(data: dict, schema):
-    """
-    Map flattened dict → dataclass instance.
-    Missing fields use dataclass defaults.
-    """
-    kwargs = {}
-    for f in fields(schema):
-        if f.name in data:
-            kwargs[f.name] = data[f.name]
-    return schema(**kwargs)
-
-
 def loadConfig(path: str, default_path: str, schema):
     """
-    Load a single YAML config file with fallback to defaults inside the schema's package.
-
-    path          = runtime config path (e.g. 'config/watcher.yaml')
-    default_path  = path inside the schema's package (e.g. '/defaultconfigs/watcher.yaml')
-    schema        = dataclass type
+    Load YAML config with fallback defaults and metadata-based leaf-key mapping.
+    Section names are ignored entirely.
     """
 
     # 1. Resolve runtime config path
@@ -51,11 +36,7 @@ def loadConfig(path: str, default_path: str, schema):
     # 2. Resolve default path relative to the schema's package
     module = importlib.import_module(schema.__module__)
     schema_file = os.path.abspath(module.__file__)
-
-    # schema_file = .../serverwatcher/configmap/configclasses/watcher.py
-    # package_dir = .../serverwatcher/configmap
     package_dir = os.path.dirname(os.path.dirname(schema_file))
-
     abs_default = os.path.join(package_dir, default_path.lstrip("/"))
 
     # 3. Hydrate missing runtime config
@@ -67,7 +48,15 @@ def loadConfig(path: str, default_path: str, schema):
             with open(abs_path, "w") as f:
                 f.write("# This file doesn't have a default!\n")
 
-    # 4. Load + flatten + map
+    # 4. Load YAML and flatten it (ignore section names)
     raw = load_yaml(abs_path)
     flat = flatten_nested(raw)
-    return map_to_dataclass(flat, schema)
+
+    # 5. Build kwargs using metadata={"yaml_key": "..."}
+    kwargs = {}
+    for f in fields(schema):
+        yaml_key = f.metadata.get("yaml_key")
+        if yaml_key and yaml_key in flat:
+            kwargs[f.name] = flat[yaml_key]
+
+    return schema(**kwargs)
