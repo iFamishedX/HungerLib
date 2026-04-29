@@ -25,4 +25,6 @@ __all__ = [
     'load_yaml',
     'loadConfig',
     'clrz',
+    'set_default_colormap',
+    'get_default_colormap',
 ]

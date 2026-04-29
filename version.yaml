@@ -1,5 +1,4 @@
 run: true
-version: "2.17-dev.2"
+version: "2.17-dev.3"
 description: |
-  - Updated required version
-  - Removed broken import
+  - Added functions to init
