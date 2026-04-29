@@ -23,7 +23,6 @@ __all__ = [
     'gib_mib',
     'clearTerminal',
     'load_yaml',
-    'map_to_dataclass',
-    'load_config',
+    'loadConfig',
     'clrz',
 ]
