@@ -76,13 +76,21 @@ ASCII_COLOR_MAP = ColorMap(
     italic="\033[3m"
 )
 
-def clrz(text: str, *, mc: bool = False):
-    """Apply HungerLib color tags like <red> to a string."""
-    cmap = MC_COLOR_MAP.as_dict() if mc else ASCII_COLOR_MAP.as_dict()
+_DEFAULT_COLORMAP = ASCII_COLOR_MAP
 
+def set_default_colormap(cmap):
+    global _DEFAULT_COLORMAP
+    _DEFAULT_COLORMAP = cmap
+
+def get_default_colormap():
+    return _DEFAULT_COLORMAP
+
+def clrz(text: str, cmap=None):
+    if cmap is None:
+        cmap = get_default_colormap()
+    if hasattr(cmap, "as_dict"):
+        cmap = cmap.as_dict()
     for tag, code in cmap.items():
         text = text.replace(tag, code)
-
-    # Auto-reset at the end
-    reset = MC_COLOR_MAP.reset if mc else ASCII_COLOR_MAP.reset
+    reset = cmap.get("<reset>", "")
     return text + reset
