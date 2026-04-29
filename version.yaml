@@ -1,4 +1,4 @@
 run: true
-version: "2.18.dev5"
+version: "2.18.dev6"
 description: |
   - Test new release.yml
