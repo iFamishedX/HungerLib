@@ -1,4 +1,4 @@
 run: true
-version: "2.18"
+version: "2.19.dev1"
 description: |
-  - New release.yml
+  - Started work on new color logging system

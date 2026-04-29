@@ -8,7 +8,7 @@ time.tzset()
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.addons import ASCII_COLOR_MAP, MC_COLOR_MAP
+from hungerlib.addons import ASCII_COLOR_MAP, MC_COLOR_MAP, clrz
 
 
 class HungerLogger:
@@ -24,9 +24,8 @@ class HungerLogger:
 
         # color mapping
         file_color_map=None,
-        origin_color_map=ASCII_COLOR_MAP.as_dict(),
-        destination_color_map=ASCII_COLOR_MAP.as_dict(),
-        mc_color_map=MC_COLOR_MAP,
+        origin_color_map=ASCII_COLOR_MAP,
+        destination_color_map=ASCII_COLOR_MAP,
 
         # prefixes
         info_prefix='<white>[INFO]: ',
@@ -44,7 +43,6 @@ class HungerLogger:
         self.file_color_map = file_color_map
         self.origin_color_map = origin_color_map
         self.destination_color_map = destination_color_map
-        self.mc_color_map = mc_color_map
 
         self.info_prefix = info_prefix
         self.warn_prefix = warn_prefix
@@ -75,17 +73,10 @@ class HungerLogger:
 
         self.logger.info("Logger initialized.")
 
-    def _apply_colors(self, msg, cmap):
-        if not cmap:
-            return msg
-        for tag, code in cmap.items():
-            msg = msg.replace(tag, code)
-        return msg
-
     def _strip_colors(self, msg):
         if not self.file_color_map:
             return msg
-        for tag in self.file_color_map.keys():
+        for tag in self.file_color_map.as_dict().keys():
             msg = msg.replace(tag, "")
         return msg
 
@@ -94,7 +85,7 @@ class HungerLogger:
             return
         if not hasattr(self.server, "_rcon_send"):
             return
-        colored = self._apply_colors(msg, self.destination_color_map)
+        colored = clrz(msg, cmap=self.destination_color_map)
         if self.log_destination_method == 'rcon':
             self.server._rcon_send(f'logtellraw targetless \"{self.console_backspaces}{colored}\"')
         if self.log_destination_method == 'api':
@@ -109,7 +100,7 @@ class HungerLogger:
             self._destinationLog(full)
 
         if origin:
-            colored = self._apply_colors(full + "<reset>", self.origin_color_map)
+            colored = clrz(full + "<reset>", cmap=self.origin_color_map)
             print(colored)
 
         if logs:
