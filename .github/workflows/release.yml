@@ -48,14 +48,30 @@ jobs:
           python3 << 'EOF'
           import os, re, sys
 
-          L = os.environ["LAST_VERSION"]
-          S = os.environ["YAML_VERSION"]
+          # --- SANITIZE INPUTS ---
+          def clean(v):
+              if not v:
+                  return ""
+              return (
+                  v.strip()
+                   .replace("\u200b", "")
+                   .replace("\ufeff", "")
+                   .replace("_", ".")
+                   .replace("-", ".")
+              )
+
+          L = clean(os.environ["LAST_VERSION"])
+          S = clean(os.environ["YAML_VERSION"])
 
           def parse(v):
               m = re.match(r"^(\d+)\.(\d+)(?:\.(\d+))?(?:\.(\w+)(\d+)?)?$", v)
               if not m:
                   sys.exit(f"Invalid version: {v}")
               major, minor, patch, channel, cnum = m.groups()
+
+              if channel:
+                  channel = channel.strip().lower()
+
               return (
                   int(major),
                   int(minor),
@@ -88,7 +104,6 @@ jobs:
               if Scnum is None:
                   new = f"{Smaj}.{Smin}.{Spatch}.{Schan}1"
               else:
-                  # Use S exactly
                   if Spatch == 0:
                       new = f"{Smaj}.{Smin}.{Schan}{Scnum}"
                   else:
@@ -106,13 +121,11 @@ jobs:
 
           # CASE 3: Both have same channel → use max(L, S)
           else:
-              # Same channel guaranteed
               if Scnum is None:
                   Scnum = 0
               if Lcnum is None:
                   Lcnum = 0
 
-              # Use max(L, S)
               if Scnum > Lcnum:
                   new = f"{Nmaj}.{Nmin}.{Lpatch}.{Schan}{Scnum}"
               else:
