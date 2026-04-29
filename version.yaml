@@ -1,4 +1,5 @@
 run: true
-version: "2.15"
+version: "2.16"
 description: |
   - Modified addon structure
+  - Added clrz()
