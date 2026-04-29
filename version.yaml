@@ -1,4 +1,4 @@
 run: true
-version: "2.18.dev1"
+version: "2.18.dev2"
 description: |
-  - Merged countdown addon with scheduler addon
+  - Test new release.yml
