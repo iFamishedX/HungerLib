@@ -9,7 +9,6 @@ __all__ = [
     'ColorMap',
     'MC_COLOR_MAP',
     'ASCII_COLOR_MAP',
-    '_DEFAULT_COLOR_MAP',
     'runCountdownEvents',
     'waitForOnline',
     'waitForOffline',

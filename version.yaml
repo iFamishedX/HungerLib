@@ -1,4 +1,5 @@
 run: true
-version: "2.17-dev.1"
+version: "2.17-dev.2"
 description: |
-  - Updated release.yaml workflow
+  - Updated required version
+  - Removed broken import
