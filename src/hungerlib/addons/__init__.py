@@ -17,7 +17,6 @@ __all__ = [
     'secsUntil',
     'minsUntil',
     'validateAll',
-    'converters',
     'mb_gb',
     'gb_mb',
     'mib_gib',
