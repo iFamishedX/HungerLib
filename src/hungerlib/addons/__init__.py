@@ -1,4 +1,4 @@
-from .colormap import ColorMap, MC_COLOR_MAP, ASCII_COLOR_MAP, clrz
+from .colormap import *
 from .countdown import runCountdownEvents, waitForOnline, waitForOffline
 from .snapshot import Snapshot
 from .scheduler import *
@@ -25,4 +25,6 @@ __all__ = [
     'load_yaml',
     'loadConfig',
     'clrz',
+    'set_default_colormap',
+    'get_default_colormap',
 ]

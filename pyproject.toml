@@ -7,7 +7,7 @@ name = "hungerlib"
 version = "0.0.0"
 description = "Powerful automation library for Pterodactyl."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 license = { text = "MIT" }
 
 authors = [
