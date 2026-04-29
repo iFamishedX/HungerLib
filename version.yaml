@@ -1,4 +1,4 @@
 run: true
-version: "2.18.1"
+version: "2.19.dev1"
 description: |
-  -Bump version
+  - Started work on new color logging system
