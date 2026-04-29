@@ -73,18 +73,29 @@ jobs:
           else:
               Nmaj, Nmin = Lmaj, Lmin
 
-          # CHANNEL MISMATCH CHECK
-          if Lchan != Schan:
-              if (Lchan or Schan):
-                  with open(os.environ["GITHUB_ENV"], "a") as f:
-                      f.write("CHANNEL_MISMATCH=true\n")
-                  sys.exit(0)
+          # CHANNEL MISMATCH CHECK (Option 1)
+          # Cancel ONLY if BOTH have channels AND channel names differ
+          if Lchan and Schan and Lchan != Schan:
+              with open(os.environ["GITHUB_ENV"], "a") as f:
+                  f.write("CHANNEL_MISMATCH=true\n")
+              sys.exit(0)
 
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write("CHANNEL_MISMATCH=false\n")
 
-          # CASE 1: No channel
-          if Lchan is None and Schan is None:
+          # CASE 1: L has no channel, S has channel → use S exactly
+          if Lchan is None and Schan is not None:
+              if Scnum is None:
+                  new = f"{Smaj}.{Smin}.{Spatch}.{Schan}1"
+              else:
+                  # Use S exactly
+                  if Spatch == 0:
+                      new = f"{Smaj}.{Smin}.{Schan}{Scnum}"
+                  else:
+                      new = f"{Smaj}.{Smin}.{Spatch}.{Schan}{Scnum}"
+
+          # CASE 2: Neither has channel
+          elif Lchan is None and Schan is None:
               if (Smaj, Smin) > (Lmaj, Lmin):
                   new = f"{Smaj}.{Smin}"
               else:
@@ -93,24 +104,19 @@ jobs:
                   else:
                       new = f"{Nmaj}.{Nmin}.{Spatch}"
 
-          # CASE 2: Channel exists (and matches)
+          # CASE 3: Both have same channel → use max(L, S)
           else:
-              if Lchan is None and Schan is not None:
-                  if Scnum is None:
-                      new = f"{Nmaj}.{Nmin}.{Lpatch}.{Schan}1"
-                  else:
-                      new = f"{Nmaj}.{Nmin}.{Lpatch}.{Schan}{Scnum}"
+              # Same channel guaranteed
+              if Scnum is None:
+                  Scnum = 0
+              if Lcnum is None:
+                  Lcnum = 0
+
+              # Use max(L, S)
+              if Scnum > Lcnum:
+                  new = f"{Nmaj}.{Nmin}.{Lpatch}.{Schan}{Scnum}"
               else:
-                  if Schan is None:
-                      new = f"{Nmaj}.{Nmin}.{Lpatch}.{Lchan}{(Lcnum or 0)+1}"
-                  else:
-                      if Scnum is None:
-                          new = f"{Nmaj}.{Nmin}.{Lpatch}.{Lchan}{(Lcnum or 0)+1}"
-                      else:
-                          if Scnum <= (Lcnum or 0):
-                              new = f"{Nmaj}.{Nmin}.{Lpatch}.{Lchan}{(Lcnum or 0)+1}"
-                          else:
-                              new = f"{Nmaj}.{Nmin}.{Lpatch}.{Lchan}{Scnum}"
+                  new = f"{Nmaj}.{Nmin}.{Lpatch}.{Lchan}{Lcnum+1}"
 
           with open(os.environ["GITHUB_ENV"], "a") as f:
               f.write(f"NEXT_VERSION={new}\n")
