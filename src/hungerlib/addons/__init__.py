@@ -1,5 +1,4 @@
 from .colormap import *
-from .countdown import runCountdownEvents, waitForOnline, waitForOffline
 from .snapshot import Snapshot
 from .scheduler import *
 from .utils import *

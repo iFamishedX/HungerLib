@@ -80,12 +80,6 @@ def runCountdownEvents(
 
 
 
-
-
-# ============================================================
-# SERVER STATE HELPERS
-# ============================================================
-
 def waitForOnline(server, timeout=60, interval=2):
     """
     Wait until the server reports status 'running'.
