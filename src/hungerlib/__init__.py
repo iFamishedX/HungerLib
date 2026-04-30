@@ -8,7 +8,7 @@ except PackageNotFoundError:
 
 # --- Core modules ---
 from .panel import Panel
-from .logger import HungerLogger
+from .messagerouter import MessageRouter
 
 # --- API endpoints ---
 from .api.schedule import ScheduleAPI
@@ -22,7 +22,7 @@ __all__ = [
 
     # core utilities
     "Panel",
-    "HungerLogger",
+    "MessageRouter",
 
     # API endpoints
     "ScheduleAPI",
