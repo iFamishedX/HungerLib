@@ -14,7 +14,7 @@ class MessageRouter:
         console_backspaces=0,
 
         origin_map=ASCII_COLOR_MAP,
-        destination_map=MC_COLOR_MAP,
+        destination_map=ASCII_COLOR_MAP,
         broadcast_map=MC_COLOR_MAP,
         log_map=None,
 
