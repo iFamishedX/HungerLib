@@ -3,13 +3,12 @@ from dataclasses import dataclass, fields, is_dataclass
 
 
 class Syntax:
-    BRACES   = r"\{([^{}]+)\}"      # {key}
-    DOLLARS  = r"\$\{([^{}]+)\}"    # ${key}
-    ANGLES   = r"<([^<>]+)>"        # <key>
-    PERCENTS = r"%([^%]+)%"         # %key%
+    BRACES   = r"\{([^{}]+)\}"
+    DOLLARS  = r"\$\{([^{}]+)\}"
+    ANGLES   = r"<([^<>]+)>"
+    PERCENTS = r"%([^%]+)%"
 
-
-@dataclass
+@dataclass(frozen=True)
 class DataMap:
     __syntax__: str = Syntax.BRACES
 
@@ -23,6 +22,7 @@ class DataMap:
     @classmethod
     def syntax(cls) -> str:
         return getattr(cls, "__syntax__", Syntax.BRACES)
+
 
 
 def mapit(text: str, *maps, **runtime) -> str:
