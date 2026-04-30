@@ -3,8 +3,8 @@ import time
 import re
 import mcrcon
 from hungerlib import Panel
-from hungerlib.servers import GenericServer
-from hungerlib.addons import MC_COLOR_MAP, ASCII_COLOR_MAP
+from hungerlib.datamaps import MC_COLOR_MAP, ASCII_COLOR_MAP
+from hungerlib.servers import MinecraftServer
 
 
 class MinecraftServer(GenericServer):

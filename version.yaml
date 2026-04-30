@@ -1,4 +1,5 @@
 run: true
-version: "3.0.dev11"
+version: "3.0.dev12"
 description: |
-  - Modify messagerouter to use mapit
+  - Fixed imports
+  - Modified structure
