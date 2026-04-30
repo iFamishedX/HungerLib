@@ -1,18 +1,31 @@
 import re
 from dataclasses import dataclass, fields, is_dataclass
 
+# default maps
+_default_maps = []
 
+def set_default_maps(*maps):
+    global _default_maps
+    _default_maps = list(maps)
+
+def get_default_maps():
+    return _default_maps
+
+
+# syntax patterns
 class Syntax:
-    BRACES   = r"\{([^{}]+)\}"
-    DOLLARS  = r"\$\{([^{}]+)\}"
-    ANGLES   = r"<([^<>]+)>"
-    PERCENTS = r"%([^%]+)%"
+    braces   = r"\{([^{}]+)\}"
+    dollars  = r"\$\{([^{}]+)\}"
+    angles   = r"<([^<>]+)>"
+    percents = r"%([^%]+)%"
 
+
+# base datamap
 @dataclass(frozen=True)
 class DataMap:
-    __syntax__: str = Syntax.BRACES
+    __syntax__: str = Syntax.braces
 
-    def as_map(self) -> dict:
+    def as_map(self):
         return {
             f.name: getattr(self, f.name)
             for f in fields(self)
@@ -20,41 +33,39 @@ class DataMap:
         }
 
     @classmethod
-    def syntax(cls) -> str:
-        return getattr(cls, "__syntax__", Syntax.BRACES)
+    def get_syntax(cls):
+        return getattr(cls, "__syntax__", Syntax.braces)
 
 
+# decorator
+def datamap(_cls=None, *, syntax=Syntax.braces):
+    def wrap(cls):
+        cls.__syntax__ = syntax
+        return dataclass(frozen=True)(cls)
+    return wrap if _cls is None else wrap(_cls)
 
-def mapit(text: str, *maps, **runtime) -> str:
+
+# core templating
+def mapit(text: str, *maps, **runtime):
+    maps = (*get_default_maps(), *maps)
     for m in maps:
-        # auto-instantiate dataclass classes
         if isinstance(m, type) and is_dataclass(m):
             m = m()
-
-        # dataclass instance to dict
         if is_dataclass(m):
-            pattern = m.syntax()
-            dmap = m.as_map()
-
-        # colormap-like objects to dict
+            pattern = m.get_syntax()
+            d = m.as_map()
         elif hasattr(m, "as_dict"):
-            pattern = Syntax.ANGLES
-            dmap = m.as_dict()
-
-        # raw dict
+            pattern = Syntax.angles
+            d = m.as_dict()
         elif isinstance(m, dict):
-            pattern = runtime.get("syntax", None)
+            pattern = runtime.get("syntax")
             if not pattern:
                 continue
-            dmap = m
-
+            d = m
         else:
             continue
-
-        # apply this map's syntax only
         def repl(match):
-            key = match.group(1)
-            return str(dmap.get(key, match.group(0)))
+            k = match.group(1)
+            return str(d.get(k, match.group(0)))
         text = re.sub(pattern, repl, text)
-
     return text
