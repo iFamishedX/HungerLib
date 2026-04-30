@@ -41,6 +41,7 @@ class DataMap:
 def datamap(_cls=None, *, syntax=Syntax.braces):
     def wrap(cls):
         cls.__syntax__ = syntax
+        cls = type(cls.__name__, (DataMap,), dict(cls.__dict__))
         return dataclass(frozen=True)(cls)
     return wrap if _cls is None else wrap(_cls)
 
@@ -48,24 +49,32 @@ def datamap(_cls=None, *, syntax=Syntax.braces):
 # core templating
 def mapit(text: str, *maps, **runtime):
     maps = (*get_default_maps(), *maps)
+
     for m in maps:
         if isinstance(m, type) and is_dataclass(m):
             m = m()
+
         if is_dataclass(m):
             pattern = m.get_syntax()
             d = m.as_map()
+
         elif hasattr(m, "as_dict"):
             pattern = Syntax.angles
             d = m.as_dict()
+
         elif isinstance(m, dict):
             pattern = runtime.get("syntax")
             if not pattern:
                 continue
             d = m
+
         else:
             continue
+
         def repl(match):
             k = match.group(1)
             return str(d.get(k, match.group(0)))
+
         text = re.sub(pattern, repl, text)
+
     return text
