@@ -9,6 +9,7 @@ except PackageNotFoundError:
 # --- Core modules ---
 from .panel import Panel
 from .messagerouter import MessageRouter
+from .datamap import *
 
 # --- API endpoints ---
 from .api.schedule import ScheduleAPI
@@ -23,6 +24,9 @@ __all__ = [
     # core utilities
     "Panel",
     "MessageRouter",
+    "Syntax",
+    "DataMap",
+    "mapit",
 
     # API endpoints
     "ScheduleAPI",
