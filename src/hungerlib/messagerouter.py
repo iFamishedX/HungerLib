@@ -111,6 +111,13 @@ class MessageRouter:
         if not template:
             return
 
+        if level == "info":
+            template = self.info_prefix + template
+        elif level == "warn":
+            template = self.warn_prefix + template
+        elif level == "error":
+            template = self.error_prefix + template
+
         if self.formatter:
             msg = self.formatter(template, **fmt)
         else:
