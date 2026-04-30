@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from hungerlib.datamaps import ASCII_COLOR_MAP, MC_COLOR_MAP
-from hungerlib import DataMap, Syntax, mapit
+from hungerlib.datamap import DataMap, Syntax, mapit
 
 
 class MessageRouter:
