@@ -102,10 +102,10 @@ class MessageRouter:
         self,
         template,
         level="info",
-        origin=True,
         destination=False,
-        log=True,
         broadcast=False,
+        log=True,
+        origin=True,
         **fmt
     ):
         if not template:
