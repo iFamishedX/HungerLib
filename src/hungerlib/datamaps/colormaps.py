@@ -1,4 +1,4 @@
-from hungerlib import datamap, Syntax, mapit, set_default_maps
+from hungerlib.datamap import datamap, Syntax, mapit, set_default_maps
 
 @datamap(syntax=Syntax.angles) # produces <>
 class ColorMap:
