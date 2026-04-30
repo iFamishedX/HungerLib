@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.objects import ASCII_COLOR_MAP, MC_COLOR_MAP
+from hungerlib.datamaps import ASCII_COLOR_MAP, MC_COLOR_MAP
 from hungerlib import DataMap, Syntax, mapit
 
 
