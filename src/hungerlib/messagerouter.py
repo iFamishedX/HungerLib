@@ -1,7 +1,8 @@
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.addons import clrz, ASCII_COLOR_MAP, MC_COLOR_MAP
+from hungerlib.objects import ASCII_COLOR_MAP, MC_COLOR_MAP
+from hungerlib import DataMap, Syntax, mapit
 
 
 class MessageRouter:
@@ -70,13 +71,13 @@ class MessageRouter:
 
     # routing primatives
     def origin(self, msg):
-        colored = clrz(msg, cmap=self._origin_map)
+        colored = mapit(msg, self._origin_map)
         print(colored)
 
     def destination(self, msg):
         if not self.server or not hasattr(self.server, "_rcon_send"):
             return
-        colored = clrz(msg, cmap=self._destination_map)
+        colored = mapit(msg, self._destination_map)
         self.server._rcon_send(
             f'logtellraw targetless "{self.console_backspaces}{colored}"'
         )
@@ -94,7 +95,7 @@ class MessageRouter:
 
     def broadcast(self, msg):
         if hasattr(self.server, "sendBroadcast"):
-            colored = clrz(msg, cmap=self._broadcast_map)
+            colored = mapit(msg, self._broadcast_map)
             self.server.sendBroadcast(colored)
 
     # high level router
