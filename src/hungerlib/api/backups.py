@@ -1,8 +1,4 @@
 class BackupsAPI:
-    """
-    Raw backups endpoints.
-    """
-
     def __init__(self, panel):
         self.panel = panel
 
@@ -16,11 +12,7 @@ class BackupsAPI:
         )
 
     def delete(self, server_id, backup_id):
-        return self.panel.delete(
-            f"/api/client/servers/{server_id}/backups/{backup_id}"
-        )
+        return self.panel.delete(f"/api/client/servers/{server_id}/backups/{backup_id}")
 
     def download(self, server_id, backup_id):
-        return self.panel.get(
-            f"/api/client/servers/{server_id}/backups/{backup_id}/download"
-        )
+        return self.panel.get(f"/api/client/servers/{server_id}/backups/{backup_id}/download")

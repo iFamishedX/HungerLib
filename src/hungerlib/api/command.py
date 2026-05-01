@@ -1,10 +1,4 @@
-# src/hungerlib/api/command.py
-
 class CommandAPI:
-    """
-    Raw command endpoint.
-    """
-
     def __init__(self, panel):
         self.panel = panel
 

@@ -1,8 +1,4 @@
 class StartupAPI:
-    """
-    Raw startup variable endpoints.
-    """
-
     def __init__(self, panel):
         self.panel = panel
 

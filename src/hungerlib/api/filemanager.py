@@ -1,20 +1,12 @@
 class FileManagerAPI:
-    """
-    Raw file manager endpoints.
-    """
-
     def __init__(self, panel):
         self.panel = panel
 
     def list(self, server_id, directory="/"):
-        return self.panel.get(
-            f"/api/client/servers/{server_id}/files/list?directory={directory}"
-        )
+        return self.panel.get(f"/api/client/servers/{server_id}/files/list?directory={directory}")
 
     def download(self, server_id, file_path):
-        return self.panel.get(
-            f"/api/client/servers/{server_id}/files/download?file={file_path}"
-        )
+        return self.panel.get(f"/api/client/servers/{server_id}/files/download?file={file_path}")
 
     def upload(self, server_id, directory, file_data):
         return self.panel._raw_upload(

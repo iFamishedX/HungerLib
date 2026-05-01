@@ -1,6 +1,6 @@
 # Universal server class
-from hungerlib import Panel
-from hungerlib.datamaps import MC_COLOR_MAP, ASCII_COLOR_MAP
+from hungerlib.panel import Panel
+from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
 
 
 class GenericServer:

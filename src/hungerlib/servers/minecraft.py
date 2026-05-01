@@ -1,10 +1,9 @@
-# Minecraft server class
 import time
 import re
 import mcrcon
-from hungerlib import Panel
-from hungerlib.datamaps import MC_COLOR_MAP, ASCII_COLOR_MAP
-from hungerlib.servers import MinecraftServer
+from hungerlib.panel import Panel
+from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
+from hungerlib.servers import GenericServer
 
 
 class MinecraftServer(GenericServer):
