@@ -1,5 +1,4 @@
 run: true
-version: "3.0.dev18"
+version: "3.0.dev19"
 description: |
-  - Refactor
-  - Init rewrite
+  - Test init rewrite
