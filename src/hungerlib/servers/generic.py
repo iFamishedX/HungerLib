@@ -187,10 +187,6 @@ class GenericServer:
 
 
     def getSchedule(self, schedule_id: int):
-        """
-        Returns a dict containing all schedule attributes for the given schedule_id.
-        Works with raw ScheduleAPI responses.
-        """
         resp = self.panel.schedules.list(self.server_id)
         data = resp.json()
         for item in data.get("data", []):
