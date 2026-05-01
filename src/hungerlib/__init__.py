@@ -5,7 +5,7 @@ try:
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
-# Import modules normally
+# Import modules
 from . import panel
 from . import servers
 from . import messagerouter
@@ -13,7 +13,34 @@ from . import datamap as _datamap
 from . import configloader
 from . import utils
 
-from .datamap import *
+# Re-export datamap symbols
+from .datamap import (
+    Syntax,
+    DataMap,
+    datamap,
+    mapit,
+    set_default_maps,
+    get_default_maps,
+)
+
+# Re-export servers symbols
+from .servers import (
+    MinecraftServer,
+    GenericServer,
+)
+
+# Re-export panel symbols
+from .panel import Panel
+
+# Re-export utils symbols
+from .utils import (
+    ASCII_COLOR_MAP,
+    MC_COLOR_MAP,
+    ColorMap,
+)
+
+# Re-export configloader symbols
+from .configloader import loadConfig
 
 __all__ = [
     # modules
@@ -24,5 +51,26 @@ __all__ = [
     "configloader",
     "utils",
 
-    * _datamap.__all__,
+    # datamap symbols
+    "Syntax",
+    "DataMap",
+    "datamap",
+    "mapit",
+    "set_default_maps",
+    "get_default_maps",
+
+    # servers symbols
+    "MinecraftServer",
+    "GenericServer",
+
+    # panel symbols
+    "Panel",
+
+    # utils symbols
+    "ASCII_COLOR_MAP",
+    "MC_COLOR_MAP",
+    "ColorMap",
+
+    # configloader symbols
+    "loadConfig",
 ]

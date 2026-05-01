@@ -1,4 +1,4 @@
 run: true
-version: "3.0.dev20"
+version: "3.0.dev21"
 description: |
-  - Test init rewrite
+  - Test new exports
