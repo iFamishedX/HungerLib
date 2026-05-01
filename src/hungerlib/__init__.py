@@ -6,32 +6,19 @@ try:
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
-# --- Core modules ---
-from .panel import Panel
-from .messagerouter import MessageRouter
-from .datamap import *
 
-# --- API endpoints ---
-from .api.schedule import ScheduleAPI
-from .api.filemanager import FileManagerAPI
-from .api.backups import BackupsAPI
-from .api.databases import DatabasesAPI
-from .api.startup import StartupAPI
+from . import panel
+from . import servers
+from . import messagerouter
+from . import datamap
+from . import configloader
+from . import utils
 
 __all__ = [
-    "__version__",
-
-    # core utilities
-    "Panel",
-    "MessageRouter",
-    "Syntax",
-    "DataMap",
-    "mapit",
-
-    # API endpoints
-    "ScheduleAPI",
-    "FileManagerAPI",
-    "BackupsAPI",
-    "DatabasesAPI",
-    "StartupAPI",
+    "panel",
+    "servers",
+    "messagerouter",
+    "datamap",
+    "configloader",
+    "utils",
 ]

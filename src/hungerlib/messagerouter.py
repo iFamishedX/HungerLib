@@ -145,3 +145,7 @@ class MessageRouter:
 
     def error(self, template, **fmt):
         self.say(self.error_prefix + template, level="error", **fmt)
+
+
+
+__all__ = ["MessageRouter"]

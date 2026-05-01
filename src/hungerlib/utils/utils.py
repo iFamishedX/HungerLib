@@ -1,3 +1,5 @@
+import os
+
 class Snapshot:
     def __init__(self, Server, rounding=2, gb=False):
         self.Server = Server
@@ -29,3 +31,13 @@ class Snapshot:
             base += f'\nOnline players: {self.players}'
 
         return base
+
+def clearTerminal():
+    os.system("clear" if os.name == "posix" else "cls")
+
+def validateAll(panel, server):
+    return (
+        panel.ping() is True and
+        panel.validateAPI() is True and
+        server.getStatus() == "running"
+    )

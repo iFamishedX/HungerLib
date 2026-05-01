@@ -64,3 +64,13 @@ def mapit(text: str, *maps, **runtime):
             return str(d.get(k, match.group(0)))
         text = re.sub(pattern, repl, text)
     return text
+
+
+__all__ = [
+    "set_default_maps",
+    "get_default_maps",
+    "Syntax",
+    "DataMap",
+    "datamap",
+    "mapit",
+]

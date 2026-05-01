@@ -1,4 +1,4 @@
 run: true
-version: "3.0.dev15"
+version: "3.0.dev16"
 description: |
-  - Fixed circular import
+  - Full structure rewrite

@@ -21,33 +21,12 @@ def snapSchedule(minimumMinutes=30, snapMinutes=(0, 30)):
         "formatted": scheduled.strftime("%I:%M %p")
     }
 
-
 def runCountdownEvents(
     target_time,
     minute_callbacks=None,
     second_callbacks=None,
     tick_interval=1
 ):
-    """
-    A simple, readable countdown engine.
-
-    - Counts down until `target_time`
-    - When the countdown hits a configured minute mark, it runs that callback
-    - When the countdown hits a configured second mark, it runs that callback
-
-    Parameters:
-        target_time (datetime):
-            The time we are counting down to.
-
-        minute_callbacks (dict[int, callable]):
-            Example: {5: func, 1: func}
-
-        second_callbacks (dict[int, callable]):
-            Example: {10: func, 5: func, 1: func}
-
-        tick_interval (int):
-            How often to check the countdown (in seconds).
-    """
 
     # Default to empty dicts if none provided
     minute_callbacks = minute_callbacks or {}
@@ -78,13 +57,7 @@ def runCountdownEvents(
 
         time.sleep(tick_interval)
 
-
-
 def waitForOnline(server, timeout=60, interval=2):
-    """
-    Wait until the server reports status 'running'.
-    Returns True if online before timeout.
-    """
     elapsed = 0
     while elapsed < timeout:
         if server.isOnline():
@@ -93,12 +66,7 @@ def waitForOnline(server, timeout=60, interval=2):
         elapsed += interval
     return False
 
-
 def waitForOffline(server, timeout=60, interval=2):
-    """
-    Wait until the server reports status 'offline'.
-    Returns True if offline before timeout.
-    """
     elapsed = 0
     while elapsed < timeout:
         if server.isOffline():
@@ -107,12 +75,9 @@ def waitForOffline(server, timeout=60, interval=2):
         elapsed += interval
     return False
 
-
-
 def secsUntil(target):
     now = datetime.now()
     return int((target - now).total_seconds())
-
 
 def minsUntil(target):
     now = datetime.now()

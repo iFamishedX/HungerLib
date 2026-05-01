@@ -63,3 +63,7 @@ class Panel:
     def validateAPI(self):
         r = self.get("/api/client/account")
         return r.status_code == 200
+
+
+
+__all__ = ["Panel"]
