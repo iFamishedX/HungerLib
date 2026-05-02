@@ -40,7 +40,13 @@ def datamap(_cls=None, *, syntax=Syntax.braces):
         cls.__syntax__ = syntax
         cls = type(cls.__name__, (DataMap,), dict(cls.__dict__))
         return dataclass(frozen=True)(cls)
+
     return wrap if _cls is None else wrap(_cls)
+
+datamap.braces = datamap(syntax=Syntax.braces)
+datamap.angles = datamap(syntax=Syntax.angles)
+datamap.dollars = datamap(syntax=Syntax.dollars)
+datamap.percents = datamap(syntax=Syntax.percents)
 
 # core templating
 def mapit(text: str, *maps, **runtime):
@@ -61,27 +67,11 @@ def mapit(text: str, *maps, **runtime):
             d = m
         else:
             continue
+
         def repl(match):
             k = match.group(1)
             return str(d.get(k, match.group(0)))
+
         text = re.sub(pattern, repl, text)
+
     return text
-
-
-def load():
-    caller = inspect.currentframe().f_back.f_globals
-    module = sys.modules[__name__]
-
-    # Inject into caller (normal selective load)
-    caller.update({
-        "mapit": mapit,
-        "Syntax": Syntax,
-        "DataMap": DataMap,
-        "datamap": datamap,
-    })
-
-    # Inject into module namespace (for decorators)
-    module.mapit = mapit
-    module.Syntax = Syntax
-    module.DataMap = DataMap
-    module.datamap = datamap

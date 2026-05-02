@@ -146,9 +146,3 @@ class MessageRouter:
 
     def error(self, template, **fmt):
         self.say(self.error_prefix + template, level="error", **fmt)
-
-
-def load():
-    caller = inspect.currentframe().f_back.f_globals
-    from .messagerouter import MessageRouter
-    caller["MessageRouter"] = MessageRouter

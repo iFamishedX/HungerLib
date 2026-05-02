@@ -1,32 +1,58 @@
-import inspect
+from importlib.metadata import version as _pkg_version, PackageNotFoundError
 
-from .datamap import Syntax, DataMap, datamap, mapit
+# package version
+try:
+    __version__ = _pkg_version('hungerlib')
+except PackageNotFoundError:
+    __version__ = '0.0.0'
 
-def load():
-    caller = inspect.currentframe().f_back.f_globals
+# modules
+from .configloader import loadConfig
+from .datamap import set_default_maps, get_default_maps, Syntax, DataMap, datamap, mapit
+from .messagerouter import MessageRouter
+from .servers import GenericServer, MinecraftServer
+from .utils import (
+    ColorMap,
+    ASCII_COLOR_MAP,
+    MC_COLOR_MAP,
+    snapSchedule,
+    runCountdownEvents,
+    waitForOnline,
+    waitForOffline,
+    secsUntil,
+    minsUntil,
+    Snapshot,
+    clearTerminal,
+    validateAll,
+)
 
-    # All modules that support .load()
-    from . import (
-        datamap,
-        servers,
-        configloader,
-        panel,
-        messagerouter,
-        utils
-    )
+__all__ = [
+    '__version__',
 
-    modules = {
-        "datamap": datamap,
-        "servers": servers,
-        "configloader": configloader,
-        "panel": panel,
-        "messagerouter": messagerouter,
-        "utils": utils,
-    }
+    'loadConfig',
+    'MessageRouter',
+    'Panel',
 
-    # For each module the user imported, call its loader
-    for name, module in modules.items():
-        if name in caller:
-            loader = getattr(module, "load", None)
-            if callable(loader):
-                loader()
+    'set_default_maps',
+    'get_default_maps',
+    'Syntax',
+    'DataMap',
+    'datamap',
+    'mapit',
+
+    'GenericServer',
+    'MinecraftServer',
+
+    'ColorMap',
+    'ASCII_COLOR_MAP',
+    'MC_COLOR_MAP',
+    'snapSchedule',
+    'runCountdownEvents',
+    'waitForOnline',
+    'waitForOffline',
+    'secsUntil',
+    'minsUntil',
+    'Snapshot',
+    'clearTerminal',
+    'validateAll',
+]

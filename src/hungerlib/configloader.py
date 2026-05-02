@@ -66,8 +66,3 @@ def loadConfig(path, default_path, schema):
         setattr(target, attr, value)
 
     return cfg
-
-def load():
-    caller = inspect.currentframe().f_back.f_globals
-    from .configloader import loadConfig
-    caller["loadConfig"] = loadConfig
