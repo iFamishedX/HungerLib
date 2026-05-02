@@ -1,5 +1,6 @@
 import re
 import inspect
+import sys
 from dataclasses import dataclass, fields, is_dataclass
 
 # default maps
@@ -69,9 +70,18 @@ def mapit(text: str, *maps, **runtime):
 
 def load():
     caller = inspect.currentframe().f_back.f_globals
+    module = sys.modules[__name__]
+
+    # Inject into caller (normal selective load)
     caller.update({
         "mapit": mapit,
         "Syntax": Syntax,
         "DataMap": DataMap,
         "datamap": datamap,
     })
+
+    # Inject into module namespace (for decorators)
+    module.mapit = mapit
+    module.Syntax = Syntax
+    module.DataMap = DataMap
+    module.datamap = datamap
