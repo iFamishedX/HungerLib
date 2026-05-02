@@ -1,5 +1,7 @@
 import inspect
 
+from .datamap import Syntax, DataMap, datamap, mapit
+
 def load():
     caller = inspect.currentframe().f_back.f_globals
 
