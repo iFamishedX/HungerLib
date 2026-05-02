@@ -1,3 +1,4 @@
+import inspect
 import requests
 
 from hungerlib.api import CommandAPI, ScheduleAPI, FileManagerAPI, BackupsAPI, DatabasesAPI, StartupAPI
@@ -58,3 +59,9 @@ class Panel:
     def validateAPI(self):
         r = self.get("/api/client/account")
         return r.status_code == 200
+
+
+def load():
+    caller = inspect.currentframe().f_back.f_globals
+    from .panel import Panel
+    caller["Panel"] = Panel

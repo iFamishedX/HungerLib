@@ -1,4 +1,5 @@
 import re
+import inspect
 from dataclasses import dataclass, fields, is_dataclass
 
 # default maps
@@ -64,3 +65,13 @@ def mapit(text: str, *maps, **runtime):
             return str(d.get(k, match.group(0)))
         text = re.sub(pattern, repl, text)
     return text
+
+
+def load():
+    caller = inspect.currentframe().f_back.f_globals
+    caller.update({
+        "mapit": mapit,
+        "Syntax": Syntax,
+        "DataMap": DataMap,
+        "datamap": datamap,
+    })

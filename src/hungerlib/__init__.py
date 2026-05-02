@@ -1,74 +1,30 @@
-from importlib.metadata import version as _pkg_version, PackageNotFoundError
+import inspect
 
-try:
-    __version__ = _pkg_version('hungerlib')
-except PackageNotFoundError:
-    __version__ = '0.0.0'
+def load():
+    caller = inspect.currentframe().f_back.f_globals
 
-# === MODULES ===
-from . import panel
-from . import servers
-from . import messagerouter
-from . import datamap
-from . import configloader
-from . import utils
+    # All modules that support .load()
+    from . import (
+        datamap,
+        servers,
+        configloader,
+        panel,
+        messagerouter,
+        utils
+    )
 
-# === SYMBOLS ===
-from .panel import Panel
+    modules = {
+        "datamap": datamap,
+        "servers": servers,
+        "configloader": configloader,
+        "panel": panel,
+        "messagerouter": messagerouter,
+        "utils": utils,
+    }
 
-from .configloader import loadConfig
-from .messagerouter import MessageRouter
-from .servers import GenericServer, MinecraftServer
-from .datamap import Syntax, DataMap, datamap, mapit, set_default_maps, get_default_maps
-from .utils import (
-    ASCII_COLOR_MAP,
-    MC_COLOR_MAP,
-    ColorMap,
-    snapSchedule,
-    runCountdownEvents,
-    waitForOnline,
-    waitForOffline,
-    secsUntil,
-    minsUntil,
-    Snapshot,
-    clearTerminal,
-    validateAll
-)
-
-__all__ = [
-    # === MODULES ===
-    'panel',
-    'servers',
-    'messagerouter',
-    'datamap',
-    'configloader',
-    'utils',
-
-    # === SYMBOLS ===
-    'Panel',
-    'loadConfig',
-    'MessageRouter',
-    
-    'GenericServer',
-    'MinecraftServer',
-
-    'Syntax',
-    'DataMap',
-    'datamap',
-    'mapit',
-    'set_default_maps',
-    'get_default_maps',
-
-    'ASCII_COLOR_MAP',
-    'MC_COLOR_MAP',
-    'ColorMap',
-    'snapSchedule',
-    'runCountdownEvents',
-    'waitForOnline',
-    'waitForOffline',
-    'secsUntil',
-    'minsUntil',
-    'Snapshot',
-    'clearTerminal',
-    'validateAll'
-]
+    # For each module the user imported, call its loader
+    for name, module in modules.items():
+        if name in caller:
+            loader = getattr(module, "load", None)
+            if callable(loader):
+                loader()
