@@ -1,4 +1,5 @@
 from importlib.metadata import version as _pkg_version, PackageNotFoundError
+from types import SimpleNamespace
 
 # package version
 try:
@@ -27,23 +28,54 @@ from .utils import (
     validateAll,
 )
 
+# namespaces
+utils = SimpleNamespace(
+    ColorMap = ColorMap,
+    ASCII_COLOR_MAP = ASCII_COLOR_MAP,
+    MC_COLOR_MAP = MC_COLOR_MAP,
+    snapSchedule = snapSchedule,
+    runCountdownEvents = runCountdownEvents,
+    waitForOnline = waitForOnline,
+    waitForOffline = waitForOffline,
+    secsUntil = secsUntil,
+    minsUntil = minsUntil,
+    Snapshot = Snapshot,
+    clearTerminal = clearTerminal,
+    validateAll = validateAll,
+)
+
+servers = SimpleNamespace(
+    Panel = Panel,
+    Generic = GenericServer,
+    Minecraft = MinecraftServer,
+)
+
+datamap_api = SimpleNamespace(
+    set_default_maps = set_default_maps,
+    get_default_maps = get_default_maps,
+    syntax = Syntax,
+    DataMap = DataMap,
+    datamap = datamap,
+    mapit = mapit,
+)
+
+
+
 __all__ = [
     '__version__',
 
+    # modules
     'loadConfig',
     'MessageRouter',
     'Panel',
-
     'set_default_maps',
     'get_default_maps',
     'Syntax',
     'DataMap',
     'datamap',
     'mapit',
-
     'GenericServer',
     'MinecraftServer',
-
     'ColorMap',
     'ASCII_COLOR_MAP',
     'MC_COLOR_MAP',
@@ -56,4 +88,9 @@ __all__ = [
     'Snapshot',
     'clearTerminal',
     'validateAll',
+
+    # namespaces
+    'utils',
+    'servers',
+    'datamap_api',
 ]
