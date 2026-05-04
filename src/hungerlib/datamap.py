@@ -16,7 +16,7 @@ class Syntax:
     angles   = r"<([^<>]+)>"
     percents = r"%([^%]+)%"
 
-@dataclass(frozen=True)
+@dataclass
 class DataMap:
     __syntax__: str = Syntax.braces
     __mode__ = None
@@ -35,7 +35,7 @@ def datamap(_cls=None, *, syntax=Syntax.braces, mode=None):
         cls.__syntax__ = syntax
         cls.__mode__ = mode
         cls = type(cls.__name__, (DataMap,), dict(cls.__dict__))
-        return dataclass(frozen=False)(cls)
+        return dataclass(cls)
     return wrap if _cls is None else wrap(_cls)
 
 datamap.braces = datamap(syntax=Syntax.braces)
