@@ -38,7 +38,6 @@ def convert_value(value, annotation):
     if annotation is float:
         return float(value)
     if annotation is bool:
-        # YAML already parses true/false correctly
         return bool(value)
     return value
 
