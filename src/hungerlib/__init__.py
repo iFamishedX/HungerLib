@@ -8,6 +8,7 @@ except PackageNotFoundError:
     __version__ = '0.0.0'
 
 # modules
+CONFIG_MODE = "config"
 from .configloader import loadConfig
 from .datamap import set_default_maps, get_default_maps, Syntax, DataMap, datamap, mapit
 from .messagerouter import MessageRouter
@@ -68,6 +69,7 @@ datamap_api = SimpleNamespace(
 
 __all__ = [
     '__version__',
+    'CONFIG_MODE',
 
     # modules
     'loadConfig',
