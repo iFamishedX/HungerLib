@@ -51,7 +51,7 @@ def loadConfig(path, default_path, schema):
 
     raw = load_yaml(abs_path)
 
-    cfg = schema()  # empty dataclass instance
+    values = {}
 
     for f in fields(schema):
         yaml_path = f.metadata.get("yaml_key")
@@ -62,7 +62,6 @@ def loadConfig(path, default_path, schema):
         if value is None:
             continue
 
-        target, attr = ensure_nested(cfg, f.name)
-        setattr(target, attr, value)
+        values[f.name] = value
 
-    return cfg
+    return schema(**values)
