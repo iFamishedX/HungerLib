@@ -34,8 +34,13 @@ def datamap(_cls=None, *, syntax=Syntax.braces, mode=None):
     def wrap(cls):
         cls.__syntax__ = syntax
         cls.__mode__ = mode
-        cls = type(cls.__name__, (DataMap,), dict(cls.__dict__, __slots__=()))
-        return dataclass(cls)
+
+        namespace = dict(cls.__dict__)
+        namespace["__dict__"] = {}
+
+        cls = type(cls.__name__, (DataMap,), namespace)
+        return dataclass(frozen=False)(cls)
+
     return wrap if _cls is None else wrap(_cls)
 
 datamap.braces = datamap(syntax=Syntax.braces)
