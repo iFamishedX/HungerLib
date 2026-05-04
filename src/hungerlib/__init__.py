@@ -53,10 +53,15 @@ servers = SimpleNamespace(
 datamap_api = SimpleNamespace(
     set_default_maps = set_default_maps,
     get_default_maps = get_default_maps,
-    syntax = Syntax,
+    Syntax = Syntax,
     DataMap = DataMap,
-    datamap = datamap,
+    decorator = datamap,
     mapit = mapit,
+
+    braces = Syntax.braces,
+    dollars = Syntax.dollars,
+    angles = Syntax.angles,
+    percents = Syntax.percents,
 )
 
 

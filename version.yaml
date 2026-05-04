@@ -1,4 +1,4 @@
 run: true
-version: "3.0.dev31"
+version: "3.0.dev32"
 description: |
-  - Added namespaces to init
+  - Modified datamap_api namespace
