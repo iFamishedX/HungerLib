@@ -1,4 +1,4 @@
 run: true
-version: "3.2.dev9"
+version: "3.2.dev10"
 description: |
-  - Rewrote mapit()
+  - Removed default mapping

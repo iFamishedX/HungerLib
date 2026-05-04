@@ -1,10 +1,6 @@
-import inspect
 import logging
 from pathlib import Path
 from datetime import datetime
-from hungerlib.utils.colormaps import ASCII_COLOR_MAP, MC_COLOR_MAP
-from hungerlib.datamap import DataMap, Syntax, mapit
-
 
 class MessageRouter:
     def __init__(
@@ -14,11 +10,6 @@ class MessageRouter:
         log_path,
         formatter=None,
         console_backspaces=0,
-
-        origin_map=ASCII_COLOR_MAP,
-        destination_map=ASCII_COLOR_MAP,
-        broadcast_map=MC_COLOR_MAP,
-        log_map=None,
 
         info_prefix="<white>[INFO]: ",
         warn_prefix="<yellow>[WARN]: ",
@@ -32,11 +23,6 @@ class MessageRouter:
         self.log_path.mkdir(parents=True, exist_ok=True)
 
         self.console_backspaces = "\b" * console_backspaces
-
-        self._origin_map = origin_map
-        self._destination_map = destination_map
-        self._broadcast_map = broadcast_map
-        self._log_map = log_map
 
         self.info_prefix = info_prefix
         self.warn_prefix = warn_prefix
@@ -57,47 +43,27 @@ class MessageRouter:
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
 
-    # colormap getters/setters
-    def setOriginMap(self, cmap): self._origin_map = cmap
-    def getOriginMap(self): return self._origin_map
-
-    def setDestinationMap(self, cmap): self._destination_map = cmap
-    def getDestinationMap(self): return self._destination_map
-
-    def setBroadcastMap(self, cmap): self._broadcast_map = cmap
-    def getBroadcastMap(self): return self._broadcast_map
-
-    def setLogMap(self, cmap): self._log_map = cmap
-    def getLogMap(self): return self._log_map
-
-    # routing primatives
+    # routing primitives
     def origin(self, msg):
-        colored = mapit(msg, self._origin_map)
-        print(colored)
+        print(msg)
 
     def destination(self, msg):
         if not self.server or not hasattr(self.server, "_rcon_send"):
             return
-        colored = mapit(msg, self._destination_map)
         self.server._rcon_send(
-            f'logtellraw targetless "{self.console_backspaces}{colored}"'
+            f'logtellraw targetless "{self.console_backspaces}{msg}"'
         )
 
     def log(self, msg, level="INFO"):
-        clean = msg
-        if self._log_map:
-            for tag in self._log_map.as_dict().keys():
-                clean = clean.replace(tag, "")
         {
             "INFO": self.logger.info,
             "WARN": self.logger.warning,
             "ERROR": self.logger.error
-        }[level](clean)
+        }[level](msg)
 
     def broadcast(self, msg):
         if hasattr(self.server, "sendBroadcast"):
-            colored = mapit(msg, self._broadcast_map)
-            self.server.sendBroadcast(colored)
+            self.server.sendBroadcast(msg)
 
     # high level router
     def say(
