@@ -10,6 +10,7 @@ except PackageNotFoundError:
 from .configloader import loadConfig
 from .datamap import set_default_maps, get_default_maps, Syntax, DataMap, datamap, mapit
 from .messagerouter import MessageRouter
+from .panel import Panel
 from .servers import GenericServer, MinecraftServer
 from .utils import (
     ColorMap,
