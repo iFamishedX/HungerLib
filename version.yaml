@@ -1,4 +1,4 @@
 run: true
-version: "3.0.dev28"
+version: "3.0.dev29"
 description: |
-  - Fix loadConfig()
+  - Fix mapit()

@@ -74,4 +74,14 @@ def mapit(text: str, *maps, **runtime):
 
         text = re.sub(pattern, repl, text)
 
+    if runtime:
+        pattern = Syntax.braces
+        d = runtime
+
+        def repl(match):
+            k = match.group(1)
+            return str(d.get(k, match.group(0)))
+
+        text = re.sub(pattern, repl, text)
+
     return text
