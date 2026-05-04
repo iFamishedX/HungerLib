@@ -1,4 +1,4 @@
 run: true
-version: "3.2.dev8"
+version: "3.2.dev9"
 description: |
-  - Fix
+  - Rewrote mapit()

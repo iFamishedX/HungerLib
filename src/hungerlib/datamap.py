@@ -48,33 +48,65 @@ datamap.angles = datamap(syntax=Syntax.angles)
 datamap.dollars = datamap(syntax=Syntax.dollars)
 datamap.percents = datamap(syntax=Syntax.percents)
 
-def mapit(text: str, *maps, **runtime):
-    maps = (*get_default_maps(), *maps)
-    for m in maps:
+def mapit(text: str, *maps, only_maps=None, disable=None, enable=None, **runtime):
+    # 1. FULL OVERRIDE MODE
+    if only_maps is not None:
+        maps_to_use = list(only_maps)
+
+    else:
+        # 2. Start with default maps
+        maps_to_use = list(get_default_maps())
+
+        # 3. Remove disabled maps
+        if disable:
+            maps_to_use = [m for m in maps_to_use if m not in disable]
+
+        # 4. Add positional maps
+        if maps:
+            maps_to_use.extend(maps)
+
+        # 5. Add enabled maps
+        if enable:
+            maps_to_use.extend(enable)
+
+    # 6. Apply maps in order
+    for m in maps_to_use:
         if isinstance(m, type) and is_dataclass(m):
             m = m()
+
         if is_dataclass(m):
             pattern = m.get_syntax()
             d = m.as_map()
+
         elif hasattr(m, "as_dict"):
             pattern = Syntax.angles
             d = m.as_dict()
+
         elif isinstance(m, dict):
             pattern = runtime.get("syntax")
             if not pattern:
                 continue
             d = m
+
         else:
             continue
+
         def repl(match):
             k = match.group(1)
             return str(d.get(k, match.group(0)))
+
         text = re.sub(pattern, repl, text)
+
+    # 7. Runtime kwargs always apply last
     if runtime:
         pattern = Syntax.braces
         d = runtime
+
         def repl(match):
             k = match.group(1)
             return str(d.get(k, match.group(0)))
+
         text = re.sub(pattern, repl, text)
+
     return text
+
