@@ -1,21 +1,25 @@
 import time
 import re
 import mcrcon
+
 from hungerlib.panel import Panel
 from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
 from hungerlib.servers import GenericServer
+from hungerlib.bridge import HungerBridgeClient
 
 
 class MinecraftServer(GenericServer):
     def __init__(
         self,
         name,
-        panel,
+        panel: Panel,
         server_id,
         server_domain,
         server_port,
         rcon_port,
         rcon_password,
+        bridge_url=None,
+        bridge_token=None,
         mc_color_map=MC_COLOR_MAP,
         ascii_color_map=ASCII_COLOR_MAP,
         tpsCommand='tt20 tps',
@@ -31,7 +35,6 @@ class MinecraftServer(GenericServer):
             else ascii_color_map
         )
 
-        # Pass normalized maps to GenericServer
         super().__init__(
             name,
             panel,
@@ -47,9 +50,12 @@ class MinecraftServer(GenericServer):
         self.rcon_password = rcon_password
         self.tpsCommand = tpsCommand
 
+        # Optional HungerBridge client
+        self.bridge: HungerBridgeClient | None = None
+        if bridge_url and bridge_token:
+            self.bridge = HungerBridgeClient(bridge_url, bridge_token)
 
-
-    # rcon handler
+    # rcon handler (fallback path)
     def _rcon_send(self, command):
         if not self.server_domain or not self.rcon_password:
             return None
@@ -65,17 +71,19 @@ class MinecraftServer(GenericServer):
 
     # getter methods
     def getPlayers(self):
+        # Prefer bridge if we ever add an endpoint; for now still RCON
         output = self._rcon_send("list")
         if not output:
             return None
         m = re.search(r"There are (\d+)", output)
         return int(m.group(1)) if m else None
+
     def getTPS(self, type="raw", rounding=10):
-        '''
+        """
         This has limitations and is not yet complete. It currently ONLY parses TT20's tps command.
         Example: /tt20 tps
         This parser WILL NOT WORK with other configurations!
-        '''
+        """
         output = self._rcon_send(self.tpsCommand)
         if not output:
             return None
@@ -91,12 +99,29 @@ class MinecraftServer(GenericServer):
         value = table.get(type, avg)
         return round(value, rounding) if rounding else value
 
-
     # commands
-    def sendConsoleCommand(self, command):
+    def sendConsoleCommand(self, command: str):
+        # Prefer HungerBridge
+        if self.bridge is not None:
+            try:
+                return self.bridge.runCommand(command)
+            except Exception as e:
+                print("Bridge command error, falling back to panel:", e)
+
+        # Fallback to panel (which may use RCON or other transport)
         return self.panel.commands.send(self.server_id, command)
-    def sendBroadcast(self, message):
+
+    def sendBroadcast(self, message: str):
         translated = self._translate_mc_colors(message)
         safe = translated.replace('"', '\\"')
         cmd = f'tellraw @a {{"text":"{safe}"}}'
+
+        # Prefer HungerBridge
+        if self.bridge is not None:
+            try:
+                return self.bridge.runCommand(cmd)
+            except Exception as e:
+                print("Bridge broadcast error, falling back to panel:", e)
+
+        # Fallback
         return self.sendConsoleCommand(cmd)

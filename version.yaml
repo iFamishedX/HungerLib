@@ -1,4 +1,5 @@
 run: true
-version: "3.2.dev10"
+version: "3.2.dev11"
 description: |
-  - Removed default mapping
+  - Added BridgeClient
+  - Revamped everything to use HungerBridge where possible

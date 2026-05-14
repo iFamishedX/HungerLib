@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
+
 class MessageRouter:
     def __init__(
         self,
@@ -48,13 +49,33 @@ class MessageRouter:
         print(msg)
 
     def destination(self, msg):
-        if not self.server or not hasattr(self.server, "_rcon_send"):
+        if not self.server:
             return
-        self.server._rcon_send(
-            f'logtellraw targetless "{self.console_backspaces}{msg}"'
-        )
+
+        # Prefer HungerBridge client if present
+        bridge = getattr(self.server, "bridge", None)
+        if bridge is not None:
+            try:
+                bridge.log(self.console_backspaces + msg, level="info")
+                return
+            except Exception as e:
+                print("Bridge destination error, falling back to RCON:", e)
+
+        # Fallback to RCON/logtellraw
+        if hasattr(self.server, "_rcon_send"):
+            self.server._rcon_send(
+                f'logtellraw targetless "{self.console_backspaces}{msg}"'
+            )
 
     def log(self, msg, level="INFO"):
+        # Prefer HungerBridge client for server log
+        bridge = getattr(self.server, "bridge", None)
+        if bridge is not None:
+            try:
+                bridge.log(msg, level=level.lower())
+            except Exception as e:
+                print("Bridge log error, falling back to file log:", e)
+
         {
             "INFO": self.logger.info,
             "WARN": self.logger.warning,

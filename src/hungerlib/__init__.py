@@ -13,6 +13,7 @@ from .datamap import set_default_maps, get_default_maps, Syntax, DataMap, datama
 from .messagerouter import MessageRouter
 from .panel import Panel
 from .servers import GenericServer, MinecraftServer
+from .bridgeclient import health, ping, runCommand, log
 from .utils import (
     ColorMap,
     ASCII_COLOR_MAP,
@@ -93,6 +94,10 @@ __all__ = [
     'Snapshot',
     'clearTerminal',
     'validateAll',
+    'health',
+    'ping',
+    'runCommand',
+    'log',
 
     # namespaces
     'utils',
