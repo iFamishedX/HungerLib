@@ -5,7 +5,7 @@ import mcrcon
 from hungerlib.panel import Panel
 from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
 from hungerlib.servers import GenericServer
-from hungerlib.bridge import HungerBridgeClient
+from hungerlib.bridgeclient import HungerBridgeClient
 
 
 class MinecraftServer(GenericServer):

@@ -1,5 +1,4 @@
 run: true
-version: "3.2.dev11"
+version: "3.2.dev12"
 description: |
-  - Added BridgeClient
-  - Revamped everything to use HungerBridge where possible
+  - Fix import
