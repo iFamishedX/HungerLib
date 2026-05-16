@@ -81,6 +81,12 @@ def loadConfig(path, default_path, schema):
                 values[f.name] = convert_value(value, f.type)
             continue
 
+        # --- UNIVERSAL YAML LOOKUP ---
+        yaml_value = raw.get(f.name)
+        if yaml_value is not None:
+            values[f.name] = convert_value(yaml_value, f.type)
+            continue
+
         # --- FALLBACK: use dataclass default ---
         if default is not MISSING:
             values[f.name] = default
