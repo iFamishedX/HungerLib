@@ -37,16 +37,20 @@ class BridgeClient:
         if not normalize:
             return data
 
-        if isinstance(data, dict):
-            if "error" in data or "success" in data:
-                return None
-            if "output" in data:
-                return data["output"]
-            return None
-
+        # top-level list → join
         if isinstance(data, list):
             return "\n".join(str(x) for x in data)
 
+        # dict → extract and normalize output
+        if isinstance(data, dict):
+            out = data.get("output")
+            if isinstance(out, list):
+                return "\n".join(str(x) for x in out)
+            if isinstance(out, (str, bytes)):
+                return out
+            return None
+
+        # string or bytes → return
         if isinstance(data, (str, bytes)):
             return data
 
