@@ -1,4 +1,4 @@
 run: true
-version: "3.2.dev"
+version: "3.2.dev14"
 description: |
-  - Revamping datamap.py
+  - Modified BridgeClient

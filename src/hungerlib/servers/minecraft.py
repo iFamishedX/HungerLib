@@ -1,23 +1,23 @@
 import time
 import re
-import mcrcon
+
 from hungerlib.panel import Panel
 from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
 from hungerlib.servers import GenericServer
+from hungerlib.bridgeclient import BridgeClient
+from hungerlib.datamap import mapit
 
 
 class MinecraftServer(GenericServer):
     def __init__(
         self,
         name,
-        panel,
+        panel: Panel,
         server_id,
         server_domain,
         server_port,
-        rcon_port,
-        rcon_password,
-        mc_color_map=MC_COLOR_MAP,
-        ascii_color_map=ASCII_COLOR_MAP,
+        bridge_url,
+        bridge_token,
         tpsCommand='tt20 tps',
     ):
         mc_map = (
@@ -31,7 +31,6 @@ class MinecraftServer(GenericServer):
             else ascii_color_map
         )
 
-        # Pass normalized maps to GenericServer
         super().__init__(
             name,
             panel,
@@ -43,40 +42,27 @@ class MinecraftServer(GenericServer):
         # Minecraft-specific fields
         self.server_domain = server_domain
         self.server_port = server_port
-        self.rcon_port = rcon_port
-        self.rcon_password = rcon_password
         self.tpsCommand = tpsCommand
 
+        # HungerBridge client
+        self.bridge = BridgeClient(bridge_url, bridge_token)
 
-
-    # rcon handler
-    def _rcon_send(self, command):
-        if not self.server_domain or not self.rcon_password:
-            return None
-        try:
-            with mcrcon.MCRcon(self.server_domain, self.rcon_password, port=self.rcon_port) as m:
-                resp1 = m.command(command)
-                time.sleep(0.05)
-                resp2 = m.command("")  # fetch buffered packets
-                return (resp1 or "") + (resp2 or "")
-        except Exception as e:
-            print("RCON error:", e)
-            return None
 
     # getter methods
     def getPlayers(self):
-        output = self._rcon_send("list")
+        output = self.bridge.runCommand("list")
         if not output:
             return None
         m = re.search(r"There are (\d+)", output)
         return int(m.group(1)) if m else None
+
     def getTPS(self, type="raw", rounding=10):
-        '''
+        """
         This has limitations and is not yet complete. It currently ONLY parses TT20's tps command.
         Example: /tt20 tps
         This parser WILL NOT WORK with other configurations!
-        '''
-        output = self._rcon_send(self.tpsCommand)
+        """
+        output = self.sendCommand(self.tpsCommand)
         if not output:
             return None
         clean = re.sub(r"§.", "", output)
@@ -91,12 +77,12 @@ class MinecraftServer(GenericServer):
         value = table.get(type, avg)
         return round(value, rounding) if rounding else value
 
-
     # commands
-    def sendConsoleCommand(self, command):
-        return self.panel.commands.send(self.server_id, command)
+    def sendConsoleCommand(self, command, show_console=False, silent=False):
+        return self.bridge.runCommand(command, show_console, silent)
+
     def sendBroadcast(self, message):
-        translated = self._translate_mc_colors(message)
+        translated = mapit(message, MC_COLOR_MAP)
         safe = translated.replace('"', '\\"')
         cmd = f'tellraw @a {{"text":"{safe}"}}'
-        return self.sendConsoleCommand(cmd)
+        return self.bridge.runCommand(cmd)
