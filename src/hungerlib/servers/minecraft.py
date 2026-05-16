@@ -65,8 +65,13 @@ class MinecraftServer(GenericServer):
         return round(value, rounding) if rounding else value
 
     # commands
-    def sendConsoleCommand(self, command, show_console=False, silent=False):
-        return self.bridge.runCommand(command, show_console, silent)
+    def sendConsoleCommand(self, command, show_console=False, silent=False, normalize=True):
+        return self.bridge.runCommand(
+        command,
+        show_console=show_console,
+        silent=silent,
+        normalize=normalize
+    )
 
     def sendBroadcast(self, message):
         translated = mapit(message, MC_COLOR_MAP)
