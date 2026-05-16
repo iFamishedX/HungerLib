@@ -13,20 +13,47 @@ class BridgeClient:
         r = requests.post(f"{self.base}{path}", headers=self.headers, json=payload)
         if not r.ok:
             raise RuntimeError(f"HungerBridge error {r.status_code}: {r.text}")
-        return r.json()
+        try:
+            return r.json()
+        except:
+            return r.text
 
     def _get(self, path):
         r = requests.get(f"{self.base}{path}", headers=self.headers)
         if not r.ok:
             raise RuntimeError(f"HungerBridge error {r.status_code}: {r.text}")
-        return r.json()
 
-    def runCommand(self, command, show_console=False, silent=False):
-        return self._post("/v1/run", {
+        try:
+            return r.json()
+        except:
+            return r.text
+
+    # Public API
+    def runCommand(self, command, show_console=False, silent=False, normalize=True):
+        data = self._post("/v1/run", {
             "command": command,
             "silent": silent,
             "show_console": show_console
         })
+
+        if not normalize:
+            return data
+
+        # Normalization
+        # 1. If dict with error/success, treat as None
+        if isinstance(data, dict):
+            if "error" in data or "success" in data:
+                return None
+            if "output" in data:
+                return data["output"]
+            return None
+
+        # 2. If already a string, return it
+        if isinstance(data, (str, bytes)):
+            return data
+
+        # 3. Anything else: None
+        return None
 
     def log(self, message, level="info"):
         return self._post("/v1/log", {
