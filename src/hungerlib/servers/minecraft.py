@@ -77,4 +77,4 @@ class MinecraftServer(GenericServer):
         translated = mapit(message, MC_COLOR_MAP)
         safe = translated.replace('"', '\\"')
         cmd = f'tellraw @a {{"text":"{safe}"}}'
-        return self.bridge.runCommand(cmd)
+        return self.bridge.runCommand(cmd, show_console=True)
