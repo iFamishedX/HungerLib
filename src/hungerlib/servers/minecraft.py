@@ -1,11 +1,11 @@
 import time
 import re
-import mcrcon
 
 from hungerlib.panel import Panel
 from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
 from hungerlib.servers import GenericServer
-from hungerlib.bridgeclient import HungerBridgeClient
+from hungerlib.bridgeclient import BridgeClient
+from hungerlib.datamap import mapit
 
 
 class MinecraftServer(GenericServer):
@@ -16,12 +16,8 @@ class MinecraftServer(GenericServer):
         server_id,
         server_domain,
         server_port,
-        rcon_port,
-        rcon_password,
-        bridge_url=None,
-        bridge_token=None,
-        mc_color_map=MC_COLOR_MAP,
-        ascii_color_map=ASCII_COLOR_MAP,
+        bridge_url,
+        bridge_token,
         tpsCommand='tt20 tps',
     ):
         mc_map = (
@@ -46,33 +42,15 @@ class MinecraftServer(GenericServer):
         # Minecraft-specific fields
         self.server_domain = server_domain
         self.server_port = server_port
-        self.rcon_port = rcon_port
-        self.rcon_password = rcon_password
         self.tpsCommand = tpsCommand
 
-        # Optional HungerBridge client
-        self.bridge: HungerBridgeClient | None = None
-        if bridge_url and bridge_token:
-            self.bridge = HungerBridgeClient(bridge_url, bridge_token)
+        # HungerBridge client
+        self.bridge = BridgeClient(bridge_url, bridge_token)
 
-    # rcon handler (fallback path)
-    def _rcon_send(self, command):
-        if not self.server_domain or not self.rcon_password:
-            return None
-        try:
-            with mcrcon.MCRcon(self.server_domain, self.rcon_password, port=self.rcon_port) as m:
-                resp1 = m.command(command)
-                time.sleep(0.05)
-                resp2 = m.command("")  # fetch buffered packets
-                return (resp1 or "") + (resp2 or "")
-        except Exception as e:
-            print("RCON error:", e)
-            return None
 
     # getter methods
     def getPlayers(self):
-        # Prefer bridge if we ever add an endpoint; for now still RCON
-        output = self._rcon_send("list")
+        output = self.bridge.runCommand("list")
         if not output:
             return None
         m = re.search(r"There are (\d+)", output)
@@ -84,7 +62,7 @@ class MinecraftServer(GenericServer):
         Example: /tt20 tps
         This parser WILL NOT WORK with other configurations!
         """
-        output = self._rcon_send(self.tpsCommand)
+        output = self.sendCommand(self.tpsCommand)
         if not output:
             return None
         clean = re.sub(r"§.", "", output)
@@ -100,28 +78,11 @@ class MinecraftServer(GenericServer):
         return round(value, rounding) if rounding else value
 
     # commands
-    def sendConsoleCommand(self, command: str):
-        # Prefer HungerBridge
-        if self.bridge is not None:
-            try:
-                return self.bridge.runCommand(command)
-            except Exception as e:
-                print("Bridge command error, falling back to panel:", e)
+    def sendConsoleCommand(self, command, show_console=False, silent=False):
+        return self.bridge.runCommand(command, show_console, silent)
 
-        # Fallback to panel (which may use RCON or other transport)
-        return self.panel.commands.send(self.server_id, command)
-
-    def sendBroadcast(self, message: str):
-        translated = self._translate_mc_colors(message)
+    def sendBroadcast(self, message):
+        translated = mapit(message, MC_COLOR_MAP)
         safe = translated.replace('"', '\\"')
         cmd = f'tellraw @a {{"text":"{safe}"}}'
-
-        # Prefer HungerBridge
-        if self.bridge is not None:
-            try:
-                return self.bridge.runCommand(cmd)
-            except Exception as e:
-                print("Bridge broadcast error, falling back to panel:", e)
-
-        # Fallback
-        return self.sendConsoleCommand(cmd)
+        return self.bridge.runCommand(cmd)

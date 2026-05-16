@@ -10,11 +10,6 @@ class MessageRouter:
         server,
         log_path,
         formatter=None,
-        console_backspaces=0,
-
-        info_prefix="<white>[INFO]: ",
-        warn_prefix="<yellow>[WARN]: ",
-        error_prefix="<red>[ERROR]: "
     ):
         self.name = name
         self.server = server
@@ -22,12 +17,6 @@ class MessageRouter:
 
         self.log_path = Path(log_path)
         self.log_path.mkdir(parents=True, exist_ok=True)
-
-        self.console_backspaces = "\b" * console_backspaces
-
-        self.info_prefix = info_prefix
-        self.warn_prefix = warn_prefix
-        self.error_prefix = error_prefix
 
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
@@ -45,44 +34,21 @@ class MessageRouter:
             self.logger.addHandler(handler)
 
     # routing primitives
-    def origin(self, msg):
+    def _log_origin(self, msg):
         print(msg)
 
-    def destination(self, msg):
-        if not self.server:
-            return
+    def _log_destination(self, msg):
+        if hasattr(self.server, "bridge"):
+            self.server.bridge.log(msg)
 
-        # Prefer HungerBridge client if present
-        bridge = getattr(self.server, "bridge", None)
-        if bridge is not None:
-            try:
-                bridge.log(self.console_backspaces + msg, level="info")
-                return
-            except Exception as e:
-                print("Bridge destination error, falling back to RCON:", e)
-
-        # Fallback to RCON/logtellraw
-        if hasattr(self.server, "_rcon_send"):
-            self.server._rcon_send(
-                f'logtellraw targetless "{self.console_backspaces}{msg}"'
-            )
-
-    def log(self, msg, level="INFO"):
-        # Prefer HungerBridge client for server log
-        bridge = getattr(self.server, "bridge", None)
-        if bridge is not None:
-            try:
-                bridge.log(msg, level=level.lower())
-            except Exception as e:
-                print("Bridge log error, falling back to file log:", e)
-
+    def _log_file(self, msg, level="INFO"):
         {
             "INFO": self.logger.info,
             "WARN": self.logger.warning,
             "ERROR": self.logger.error
         }[level](msg)
 
-    def broadcast(self, msg):
+    def _broadcast(self, msg):
         if hasattr(self.server, "sendBroadcast"):
             self.server.sendBroadcast(msg)
 
@@ -100,36 +66,29 @@ class MessageRouter:
         if not template:
             return
 
-        if level == "info":
-            template = self.info_prefix + template
-        elif level == "warn":
-            template = self.warn_prefix + template
-        elif level == "error":
-            template = self.error_prefix + template
-
         if self.formatter:
             msg = self.formatter(template, **fmt)
         else:
             msg = template
 
         if origin:
-            self.origin(msg)
+            self._log_origin(msg)
 
         if destination:
-            self.destination(msg)
+            self._log_destination(msg)
 
         if log:
-            self.log(msg, level=level.upper())
+            self._log_file(msg, level=level.upper())
 
         if broadcast:
-            self.broadcast(msg)
+            self._broadcast(msg)
 
     # level helpers
     def info(self, template, **fmt):
-        self.say(self.info_prefix + template, level="info", **fmt)
+        self.say(template, level="info", **fmt)
 
     def warn(self, template, **fmt):
-        self.say(self.warn_prefix + template, level="warn", **fmt)
+        self.say(template, level="warn", **fmt)
 
     def error(self, template, **fmt):
-        self.say(self.error_prefix + template, level="error", **fmt)
+        self.say(template, level="error", **fmt)
