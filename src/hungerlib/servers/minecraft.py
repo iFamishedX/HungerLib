@@ -49,7 +49,7 @@ class MinecraftServer(GenericServer):
         Example: /tt20 tps
         This parser WILL NOT WORK with other configurations!
         """
-        output = self.sendCommand(self.tpsCommand)
+        output = self.sendConsoleCommand(self.tpsCommand)
         if not output:
             return None
         clean = re.sub(r"§.", "", output)
