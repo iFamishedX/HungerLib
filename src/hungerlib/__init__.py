@@ -9,7 +9,7 @@ except PackageNotFoundError:
 
 # modules
 from .configloader import loadConfig
-from .datamap import set_default_maps, get_default_maps, Syntax, DataMap, datamap, mapit
+from .datamap import setGlobalMaps, getGlobalMaps, Syntax, DataMap, datamap, mapit
 from .messagerouter import MessageRouter
 from .panel import Panel
 from .servers import GenericServer, MinecraftServer
@@ -53,8 +53,8 @@ servers = SimpleNamespace(
 )
 
 datamap_api = SimpleNamespace(
-    set_default_maps = set_default_maps,
-    get_default_maps = get_default_maps,
+    setGlobalMaps = setGlobalMaps,
+    getGlobalMaps = getGlobalMaps,
     Syntax = Syntax,
     DataMap = DataMap,
     decorator = datamap,
@@ -75,8 +75,8 @@ __all__ = [
     'loadConfig',
     'MessageRouter',
     'Panel',
-    'set_default_maps',
-    'get_default_maps',
+    'setGlobalMaps',
+    'getGlobalMaps',
     'Syntax',
     'DataMap',
     'datamap',
