@@ -1,4 +1,6 @@
 run: true
-version: "3.6.4"
+version: "3.6.5"
 description: |
-  - Fix overstripping
+  - Full MessageRouter rewrite
+  - Added STRIP_COLOR_MAP
+  - Changed bridge definition structure in MinecraftServer

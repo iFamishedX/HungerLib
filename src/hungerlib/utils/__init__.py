@@ -1,4 +1,4 @@
-from .colormaps import ColorMap, ASCII_COLOR_MAP, MC_COLOR_MAP
+from .colormaps import ColorMap, ASCII_COLOR_MAP, MC_COLOR_MAP, STRIP_COLOR_MAP
 from .time import (
     snapSchedule,
     runCountdownEvents,
@@ -13,6 +13,7 @@ __all__ = [
     'ColorMap',
     'ASCII_COLOR_MAP',
     'MC_COLOR_MAP',
+    'STRIP_COLOR_MAP',
     'snapSchedule',
     'runCountdownEvents',
     'waitForOnline',

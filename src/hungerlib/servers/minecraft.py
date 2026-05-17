@@ -16,7 +16,7 @@ class MinecraftServer(GenericServer):
         server_id,
         server_domain,
         server_port,
-        bridge_url,
+        bridge_port,
         bridge_token,
         tpsCommand='tt20 tps',
     ):
@@ -32,6 +32,7 @@ class MinecraftServer(GenericServer):
         self.tpsCommand = tpsCommand
 
         # HungerBridge client
+        bridge_url = f"{server_domain}:{bridge_port}"
         self.bridge = BridgeClient(bridge_url, bridge_token)
 
 
