@@ -55,8 +55,8 @@ class MessageRouter:
             self.logger.addHandler(handler)
 
     # internal utils
-    def _format(self, template, maps, **ctx):
-        return mapit(template, only_maps=maps, **ctx)
+    def _format(self, text, maps, **ctx):
+        return mapit(text, override_maps=maps, **ctx)
 
     def _merge_maps(self, base, extra):
         maps = list(base)
@@ -65,10 +65,10 @@ class MessageRouter:
         return maps
 
     # routing primitives
-    def origin(self, template, level="info", extra_maps=None, override_maps=None, **ctx):
+    def origin(self, text, level="info", extra_maps=None, override_maps=None, **ctx):
         # format
         maps = self._merge_maps(override_maps or self.origin_maps, extra_maps)
-        mapped = self._format(template, maps, **ctx)
+        mapped = self._format(text, maps, **ctx)
         if level == "info":    prefix = mapit(self.info_prefix, [ASCII_COLOR_MAP])
         elif level == "warn":  prefix = mapit(self.warn_prefix, [ASCII_COLOR_MAP])
         elif level == "error": prefix = mapit(self.error_prefix, [ASCII_COLOR_MAP])
@@ -79,10 +79,10 @@ class MessageRouter:
         print(msg)
         return msg
 
-    def destination(self, template, level="info", extra_maps=None, override_maps=None, **ctx):
+    def destination(self, text, level="info", extra_maps=None, override_maps=None, **ctx):
         # format
         maps = self._merge_maps(override_maps or self.destination_maps, extra_maps)
-        msg = self._format(template, maps, **ctx)
+        msg = self._format(text, maps, **ctx)
         
         # send
         for server in self.Servers:
@@ -90,10 +90,10 @@ class MessageRouter:
                 server.bridge.log(msg, level)
         return msg
 
-    def broadcast(self, template, extra_maps=None, override_maps=None, **ctx):
+    def broadcast(self, text, extra_maps=None, override_maps=None, **ctx):
         # format
         maps = self._merge_maps(override_maps or self.broadcast_maps, extra_maps)
-        msg = self._format(template, maps, **ctx)
+        msg = self._format(text, maps, **ctx)
 
         # send
         for server in self.Servers:
@@ -101,10 +101,10 @@ class MessageRouter:
                 server.sendBroadcast(msg)
         return msg
 
-    def filelog(self, template, level="info", extra_maps=None, override_maps=None, **ctx):
+    def filelog(self, text, level="info", extra_maps=None, override_maps=None, **ctx):
         # format
         maps = self._merge_maps(override_maps or self.file_maps, extra_maps)
-        msg = self._format(template, maps, **ctx)
+        msg = self._format(text, maps, **ctx)
 
         # send
         {
@@ -115,17 +115,17 @@ class MessageRouter:
         return msg
 
     # simple passthrough helpers (origin + file)
-    def info(self, template, extra_maps=None, override_maps=None, **ctx):
-        msg = self.origin(template=template, level="info", extra_maps=extra_maps, override_maps=override_maps, **ctx)
-        self.filelog(template=template, level="info", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+    def info(self, text, extra_maps=None, override_maps=None, **ctx):
+        msg = self.origin(text=text, level="info", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+        self.filelog(text=text, level="info", extra_maps=extra_maps, override_maps=override_maps, **ctx)
         return msg
 
-    def warn(self, template, extra_maps=None, override_maps=None, **ctx):
-        msg = self.origin(template=template, level="warn", extra_maps=extra_maps, override_maps=override_maps, **ctx)
-        self.filelog(template=template, level="warn", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+    def warn(self, text, extra_maps=None, override_maps=None, **ctx):
+        msg = self.origin(text=text, level="warn", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+        self.filelog(text=text, level="warn", extra_maps=extra_maps, override_maps=override_maps, **ctx)
         return msg
 
-    def error(self, template, extra_maps=None, override_maps=None, **ctx):
-        msg = self.origin(template=template, level="error", extra_maps=extra_maps, override_maps=override_maps, **ctx)
-        self.filelog(template=template, level="error", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+    def error(self, text, extra_maps=None, override_maps=None, **ctx):
+        msg = self.origin(text=text, level="error", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+        self.filelog(text=text, level="error", extra_maps=extra_maps, override_maps=override_maps, **ctx)
         return msg

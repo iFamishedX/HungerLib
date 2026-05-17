@@ -1,4 +1,5 @@
 run: true
-version: "3.7.3"
+version: "3.8"
 description: |
-  - Fixed default color in warn prefix
+  - Renamed template to text in MessageRouter
+  - Revamped mapit()

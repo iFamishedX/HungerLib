@@ -1,20 +1,20 @@
 import re
 from dataclasses import dataclass, fields, is_dataclass
 
-_default_maps = []
+_GLOBAL_MAPS = []
 
-def set_default_maps(*maps):
-    global _default_maps
-    _default_maps = list(maps)
+def setGlobalMaps(*maps):
+    global _GLOBAL_MAPS
+    _GLOBAL_MAPS = list(maps)
 
-def get_default_maps():
-    return _default_maps
+def getGlobalMaps():
+    return _GLOBAL_MAPS
 
 class Syntax:
-    braces   = r"\{([^{}]+)\}"
-    dollars  = r"\$\{([^{}]+)\}"
-    angles   = r"<([^<>]+)>"
-    percents = r"%([^%]+)%"
+    braces   = r"\{([^{}]+)\}"       # {example}
+    dollars  = r"\$\{([^{}]+)\}"     # ${example}
+    angles   = r"<([^<>]+)>"         # <example>
+    percents = r"%([^%]+)%"          # %example%
 
 @dataclass
 class DataMap:
@@ -48,29 +48,17 @@ datamap.angles = datamap(syntax=Syntax.angles)
 datamap.dollars = datamap(syntax=Syntax.dollars)
 datamap.percents = datamap(syntax=Syntax.percents)
 
-def mapit(text: str, *maps, only_maps=None, disable=None, enable=None, **runtime):
-    # 1. FULL OVERRIDE MODE
-    if only_maps is not None:
-        maps_to_use = list(only_maps)
-
+def mapit(text: str, extra_maps=None, override_maps=None, **ctx):
+    # Determine maps to use
+    if override_maps is not None:
+        maps = list(override_maps)
     else:
-        # 2. Start with default maps
-        maps_to_use = list(get_default_maps())
+        maps = list(getGlobalMaps())
+        if extra_maps:
+            maps.extend(extra_maps)
 
-        # 3. Remove disabled maps
-        if disable:
-            maps_to_use = [m for m in maps_to_use if m not in disable]
-
-        # 4. Add positional maps
-        if maps:
-            maps_to_use.extend(maps)
-
-        # 5. Add enabled maps
-        if enable:
-            maps_to_use.extend(enable)
-
-    # 6. Apply maps in order
-    for m in maps_to_use:
+    # Apply maps in order
+    for m in maps:
         if isinstance(m, type) and is_dataclass(m):
             m = m()
 
@@ -83,7 +71,7 @@ def mapit(text: str, *maps, only_maps=None, disable=None, enable=None, **runtime
             d = m.as_dict()
 
         elif isinstance(m, dict):
-            pattern = runtime.get("syntax")
+            pattern = ctx.get("syntax")
             if not pattern:
                 continue
             d = m
@@ -97,10 +85,10 @@ def mapit(text: str, *maps, only_maps=None, disable=None, enable=None, **runtime
 
         text = re.sub(pattern, repl, text)
 
-    # 7. Runtime kwargs always apply last
-    if runtime:
+    # ctx vars always apply last
+    if ctx:
         pattern = Syntax.braces
-        d = runtime
+        d = ctx
 
         def repl(match):
             k = match.group(1)
@@ -109,4 +97,3 @@ def mapit(text: str, *maps, only_maps=None, disable=None, enable=None, **runtime
         text = re.sub(pattern, repl, text)
 
     return text
-
