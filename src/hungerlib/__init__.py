@@ -35,6 +35,7 @@ utils = SimpleNamespace(
     ColorMap = ColorMap,
     ASCII_COLOR_MAP = ASCII_COLOR_MAP,
     MC_COLOR_MAP = MC_COLOR_MAP,
+    STRIP_COLOR_MAP = STRIP_COLOR_MAP,
     snapSchedule = snapSchedule,
     runCountdownEvents = runCountdownEvents,
     waitForOnline = waitForOnline,
