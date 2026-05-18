@@ -1,3 +1,4 @@
+# Internal Pterodactyl FileManagerAPI
 class FileManagerAPI:
     def __init__(self, panel):
         self.panel = panel

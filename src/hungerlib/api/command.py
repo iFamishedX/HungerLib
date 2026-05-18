@@ -1,3 +1,4 @@
+# Internal Pterodactyl CommandAPI
 class CommandAPI:
     def __init__(self, panel):
         self.panel = panel

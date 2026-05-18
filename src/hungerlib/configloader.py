@@ -1,93 +1,96 @@
-import inspect
 import os
 import yaml
 import importlib
 from dataclasses import fields, MISSING
 
-class Namespace:
-    def __init__(self):
-        pass
 
-def deep_get(data, path):
-    parts = path.split(".")
+# yaml helpers
+def load_yaml(path: str) -> dict:
+    '''Loads a YAML file and always returns a dict.'''
+    with open(path, "r") as f:
+        data = yaml.safe_load(f)
+        return data if isinstance(data, dict) else {}
+
+
+def deep_get(data: dict, path: str):
+    '''Resolve dotted YAML paths like 'server.port\''''
     cur = data
-    for p in parts:
+    for part in path.split("."):
         if not isinstance(cur, dict):
             return None
-        cur = cur.get(p)
+        cur = cur.get(part)
         if cur is None:
             return None
     return cur
 
-def ensure_nested(obj, dotted_name):
-    parts = dotted_name.split(".")
-    cur = obj
-    for p in parts[:-1]:
-        if not hasattr(cur, p):
-            setattr(cur, p, Namespace())
-        cur = getattr(cur, p)
-    return cur, parts[-1]
-
-def load_yaml(path):
-    with open(path, "r") as f:
-        return yaml.safe_load(f) or {}
 
 def convert_value(value, annotation):
-    if annotation is int:
-        return int(value)
-    if annotation is float:
-        return float(value)
-    if annotation is bool:
-        return bool(value)
+    '''Convert YAML values to the dataclass field type.'''
+    try:
+        if annotation is int:
+            return int(value)
+        if annotation is float:
+            return float(value)
+        if annotation is bool:
+            return bool(value)
+    except Exception:
+        pass
     return value
 
-def loadConfig(path, default_path, schema):
-    abs_path = os.path.abspath(path)
-    os.makedirs(os.path.dirname(abs_path), exist_ok=True)
 
-    module = importlib.import_module(schema.__module__)
-    schema_file = os.path.abspath(module.__file__)
-    package_dir = os.path.dirname(os.path.dirname(schema_file))
-    abs_default = os.path.join(package_dir, default_path.lstrip("/"))
+# main loader
+def loadConfig(schema, runtime_path: str = "config/config.yaml"):
+    '''
+    Loads a config dataclass using:
+    - schema.__config_path__ for default file
+    - dataclass defaults as YAML key paths (mode="config")
+    '''
 
-    if not os.path.exists(abs_path):
-        if os.path.exists(abs_default):
-            with open(abs_default, "r") as src, open(abs_path, "w") as dst:
+    # 1. Resolve runtime path
+    abs_runtime = os.path.abspath(runtime_path)
+    os.makedirs(os.path.dirname(abs_runtime), exist_ok=True)
+
+    # 2. Resolve default config path inside the package
+    default_rel = getattr(schema, "__config_path__", None)
+    abs_default = None
+
+    if default_rel:
+        module = importlib.import_module(schema.__module__)
+        schema_file = os.path.abspath(module.__file__)
+        package_dir = os.path.dirname(schema_file)
+        abs_default = os.path.join(package_dir, default_rel.lstrip("/"))
+
+    # 3. Ensure runtime config exists
+    if not os.path.exists(abs_runtime):
+        if abs_default and os.path.exists(abs_default):
+            with open(abs_default, "r") as src, open(abs_runtime, "w") as dst:
                 dst.write(src.read())
         else:
-            with open(abs_path, "w") as f:
+            with open(abs_runtime, "w") as f:
                 f.write("# No default config found.\n")
 
-    raw = load_yaml(abs_path)
+    # 4. Load YAML
+    raw = load_yaml(abs_runtime)
     values = {}
 
+    # 5. Map YAML → dataclass fields
     mode = getattr(schema, "__mode__", None)
 
     for f in fields(schema):
-        # --- OLD SYSTEM SUPPORT (yaml_key) ---
-        yaml_path = f.metadata.get("yaml_key") if f.metadata else None
-        if yaml_path:
-            value = deep_get(raw, yaml_path)
-            if value is not None:
-                values[f.name] = convert_value(value, f.type)
+        if f.name in ("__syntax__", "__mode__", "__config_path__"):
             continue
 
-        # --- NEW SYSTEM: mode="config" + string defaults ---
         default = f.default
+
+        # mode="config": default string = YAML path
         if mode == "config" and isinstance(default, str):
             yaml_path = default
             value = deep_get(raw, yaml_path)
             if value is not None:
                 values[f.name] = convert_value(value, f.type)
-            continue
+                continue
 
-        # --- UNIVERSAL YAML LOOKUP ---
-        yaml_value = raw.get(f.name)
-        if yaml_value is not None:
-            values[f.name] = convert_value(yaml_value, f.type)
-            continue
-
-        # --- FALLBACK: use dataclass default ---
+        # fallback to dataclass default
         if default is not MISSING:
             values[f.name] = default
 

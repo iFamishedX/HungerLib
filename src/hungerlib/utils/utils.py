@@ -1,7 +1,8 @@
 import os
 
 class Snapshot:
-    def __init__(self, Server, rounding=2, gb=False):
+    def __init__(self, Server: "Server", rounding: int = 2, gb: bool = False):
+        '''Takes a snapshot of server resources'''
         self.Server = Server
 
         # generic
@@ -35,7 +36,7 @@ class Snapshot:
 def clearTerminal():
     os.system("clear" if os.name == "posix" else "cls")
 
-def validateAll(panel, server):
+def validateAll(panel: "Panel", server: "Server") -> bool:
     return (
         panel.ping() is True and
         panel.validateAPI() is True and

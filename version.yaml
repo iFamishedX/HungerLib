@@ -1,4 +1,13 @@
 run: true
-version: "3.9"
+version: "4.0"
 description: |
-  - Added recursive mapping to mapit()
+  - Added mode "dynamic" to datamaps
+  - Cleaned configloader structure and added features:
+    - Docstrings
+    - Comments
+    - Cleaner loading
+  - Cleaned BridgeClient
+  - Removed unused imports in colormaps.py
+  - Added type hints
+  - Added docstrings
+  - Fully reorganized library

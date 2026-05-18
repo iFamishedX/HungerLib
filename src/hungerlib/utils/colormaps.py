@@ -1,5 +1,4 @@
-from hungerlib.datamap import datamap, Syntax, mapit, setGlobalMaps
-
+from hungerlib.datamap import datamap, Syntax
 @datamap(syntax=Syntax.angles) # produces <>
 class ColorMap:
     black: str = "\033[30m"

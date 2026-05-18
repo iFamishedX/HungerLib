@@ -1,3 +1,4 @@
+# Internal Pterodactyl ScheduleAPI
 class ScheduleAPI:
     def __init__(self, panel):
         self.panel = panel

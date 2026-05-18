@@ -9,16 +9,17 @@ from hungerlib.datamap import mapit
 
 
 class MinecraftServer(GenericServer):
+    '''Minecraft Pterodacty Server'''
     def __init__(
         self,
-        name,
+        name: str,
         panel: Panel,
-        server_id,
-        server_domain,
-        server_port,
-        bridge_port,
-        bridge_token,
-        tpsCommand='tt20 tps',
+        server_id: str,
+        server_domain: str,
+        server_port: int,
+        bridge_port: int,
+        bridge_token: str,
+        tpsCommand: str = 'tt20 tps',
     ):
         super().__init__(
             name,
@@ -37,18 +38,20 @@ class MinecraftServer(GenericServer):
 
 
     # getter methods
-    def getPlayers(self):
+    def getPlayers(self) -> int | None:
+        '''Returns current online players'''
         output = self.bridge.runCommand("list")
         if not output:
             return None
         m = re.search(r"There are (\d+)", output)
         return int(m.group(1)) if m else None
 
-    def getTPS(self, type="raw", rounding=10):
+    def getTPS(self, type: str = "raw", rounding: int = 10) -> float| None:
         """
         This has limitations and is not yet complete. It currently ONLY parses TT20's tps command.
         Example: /tt20 tps
         This parser WILL NOT WORK with other configurations!
+        In the future, this will likely be replaced by a native HungerBridge tps command.
         """
         output = self.sendConsoleCommand(self.tpsCommand)
         if not output:
@@ -66,7 +69,14 @@ class MinecraftServer(GenericServer):
         return round(value, rounding) if rounding else value
 
     # commands
-    def sendConsoleCommand(self, command, show_console=False, silent=False, normalize=True):
+    def sendConsoleCommand(
+        self,
+        command: str,
+        show_console: bool = False,
+        silent: bool = False,
+        normalize: bool = True
+    ):
+        '''Runs a Minecraft command with optional output capture'''
         return self.bridge.runCommand(
         command,
         show_console=show_console,
@@ -74,7 +84,8 @@ class MinecraftServer(GenericServer):
         normalize=normalize
     )
 
-    def sendBroadcast(self, message):
+    def sendBroadcast(self, message: str):
+        '''Sends a broadcast using tellraw'''
         safe = message.replace('"', '\\"')
         cmd = f'tellraw @a {{"text":"{safe}"}}'
         return self.bridge.runCommand(cmd, show_console=True)

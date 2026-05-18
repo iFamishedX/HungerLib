@@ -6,7 +6,7 @@ from hungerlib.api import CommandAPI, ScheduleAPI, FileManagerAPI, BackupsAPI, D
 
 class Panel:
     """High-level panel object"""
-    def __init__(self, name, url, api_key):
+    def __init__(self, name: str, url: str, api_key: str):
         self.name = name
         self.url = url.rstrip("/")
         self.api_key = api_key
@@ -50,12 +50,12 @@ class Panel:
 
 
     # panel health
-    def ping(self):
+    def ping(self) -> bool:
         try:
             r = self.get("/api/client")
             return r.status_code == 200
         except:
             return False
-    def validateAPI(self):
+    def validateAPI(self) -> bool:
         r = self.get("/api/client/account")
         return r.status_code == 200

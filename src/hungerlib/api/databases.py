@@ -1,3 +1,4 @@
+# Internal Pterodactyl DatabasesAPI
 class DatabasesAPI:
     def __init__(self, panel):
         self.panel = panel

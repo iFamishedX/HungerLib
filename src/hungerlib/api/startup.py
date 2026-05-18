@@ -1,3 +1,4 @@
+# Internal Pterodactyl StartupAPI
 class StartupAPI:
     def __init__(self, panel):
         self.panel = panel

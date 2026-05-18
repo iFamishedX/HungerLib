@@ -1,7 +1,8 @@
 import time
 from datetime import datetime, timedelta
 
-def snapSchedule(minimumMinutes=30, snapMinutes=(0, 30)):
+def snapSchedule(minimumMinutes: int = 30, snapMinutes: tuple[int, int] = (0, 30)) -> dict:
+    '''Powerful snap scheduler (will update this docstring later)'''
     now = datetime.now()
     minimum = now + timedelta(minutes=minimumMinutes)
     snapMinutes = sorted(snapMinutes)
@@ -23,10 +24,11 @@ def snapSchedule(minimumMinutes=30, snapMinutes=(0, 30)):
 
 def runCountdownEvents(
     target_time,
-    minute_callbacks=None,
-    second_callbacks=None,
-    tick_interval=1
+    minute_callbacks: dict | None = None,
+    second_callbacks: dict | None = None,
+    tick_interval: int = 1
 ):
+    '''Runs events based on a countdown timer'''
 
     # Default to empty dicts if none provided
     minute_callbacks = minute_callbacks or {}
@@ -57,7 +59,8 @@ def runCountdownEvents(
 
         time.sleep(tick_interval)
 
-def waitForOnline(server, timeout=60, interval=2):
+def waitForOnline(server: "Server", timeout: int = 60, interval: int = 2) -> bool:
+    '''Pauses script until the server is back online'''
     elapsed = 0
     while elapsed < timeout:
         if server.isOnline():
@@ -66,7 +69,8 @@ def waitForOnline(server, timeout=60, interval=2):
         elapsed += interval
     return False
 
-def waitForOffline(server, timeout=60, interval=2):
+def waitForOffline(server: "Server", timeout: int = 60, interval: int = 2) -> bool:
+    '''Pauses script until the server is fully offline'''
     elapsed = 0
     while elapsed < timeout:
         if server.isOffline():
@@ -75,10 +79,12 @@ def waitForOffline(server, timeout=60, interval=2):
         elapsed += interval
     return False
 
-def secsUntil(target):
+def secsUntil(target: datetime) -> int:
+    '''Returns the seconds until the target time'''
     now = datetime.now()
     return int((target - now).total_seconds())
 
-def minsUntil(target):
+def minsUntil(target: datetime) -> int:
+    '''Returns the minutes until the target time'''
     now = datetime.now()
     return int((target - now).total_seconds()) // 60
