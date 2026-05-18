@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass, fields, is_dataclass
 
+# global maps
 _GLOBAL_MAPS = []
 
 def setGlobalMaps(*maps):
@@ -10,26 +11,34 @@ def setGlobalMaps(*maps):
 def getGlobalMaps():
     return _GLOBAL_MAPS
 
+
+# syntax patterns
 class Syntax:
     braces   = r"\{([^{}]+)\}"       # {example}
     dollars  = r"\$\{([^{}]+)\}"     # ${example}
     angles   = r"<([^<>]+)>"         # <example>
     percents = r"%([^%]+)%"          # %example%
 
+
+# base datamap
 @dataclass
 class DataMap:
     __syntax__: str = Syntax.braces
     __mode__ = None
+
     def as_map(self):
         return {
             f.name: getattr(self, f.name)
             for f in fields(self)
             if f.init and f.name not in ("__syntax__", "__mode__")
         }
+
     @classmethod
     def get_syntax(cls):
         return getattr(cls, "__syntax__", Syntax.braces)
 
+
+# decorator
 def datamap(_cls=None, *, syntax=Syntax.braces, mode=None):
     def wrap(cls):
         cls.__syntax__ = syntax
@@ -43,13 +52,38 @@ def datamap(_cls=None, *, syntax=Syntax.braces, mode=None):
 
     return wrap if _cls is None else wrap(_cls)
 
+# decorator shortcuts
 datamap.braces = datamap(syntax=Syntax.braces)
 datamap.angles = datamap(syntax=Syntax.angles)
 datamap.dollars = datamap(syntax=Syntax.dollars)
 datamap.percents = datamap(syntax=Syntax.percents)
 
-def mapit(text: str, extra_maps=None, override_maps=None, **ctx):
-    # Determine maps to use
+
+# recursive wrapper
+def _recursive_map(text, extra_maps, override_maps, ctx, max_depth=5):
+    current = text
+
+    for _ in range(max_depth):
+        result = mapit(
+            current,
+            extra_maps=extra_maps,
+            override_maps=override_maps,
+            recursive=False,   # prevent infinite recursion
+            **ctx
+        )
+
+        # stop if no change
+        if result == current:
+            return result
+
+        current = result
+
+    return current
+
+
+# mapit function
+def mapit(text: str, extra_maps=None, override_maps=None, recursive=True, **ctx):
+    # determine maps to use
     if override_maps is not None:
         maps = list(override_maps)
     else:
@@ -57,7 +91,7 @@ def mapit(text: str, extra_maps=None, override_maps=None, **ctx):
         if extra_maps:
             maps.extend(extra_maps)
 
-    # Apply maps in order
+    # apply maps in order
     for m in maps:
         if isinstance(m, type) and is_dataclass(m):
             m = m()
@@ -85,7 +119,7 @@ def mapit(text: str, extra_maps=None, override_maps=None, **ctx):
 
         text = re.sub(pattern, repl, text)
 
-    # ctx vars always apply last
+    # ctx vars always apply last (braces only)
     if ctx:
         pattern = Syntax.braces
         d = ctx
@@ -95,5 +129,9 @@ def mapit(text: str, extra_maps=None, override_maps=None, **ctx):
             return str(d.get(k, match.group(0)))
 
         text = re.sub(pattern, repl, text)
+
+    # recursive expansion (default enabled)
+    if recursive:
+        return _recursive_map(text, extra_maps, override_maps, ctx)
 
     return text

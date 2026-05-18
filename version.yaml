@@ -1,4 +1,4 @@
 run: true
-version: "3.8.2"
+version: "3.9"
 description: |
-  - Added STRIP_COLOR_MAP to namespace
+  - Added recursive mapping to mapit()
