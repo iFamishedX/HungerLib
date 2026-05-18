@@ -28,6 +28,8 @@ from .utils import (
     Snapshot,
     clearTerminal,
     validateAll,
+    TimeMap,
+    TIME_MAP,
 )
 
 # namespaces
@@ -36,6 +38,8 @@ utils = SimpleNamespace(
     ASCII_COLOR_MAP = ASCII_COLOR_MAP,
     MC_COLOR_MAP = MC_COLOR_MAP,
     STRIP_COLOR_MAP = STRIP_COLOR_MAP,
+    TimeMap = TimeMap,
+    TIME_MAP = TIME_MAP,
     snapSchedule = snapSchedule,
     runCountdownEvents = runCountdownEvents,
     waitForOnline = waitForOnline,
@@ -88,6 +92,8 @@ __all__ = [
     'ASCII_COLOR_MAP',
     'MC_COLOR_MAP',
     'STRIP_COLOR_MAP',
+    'TimeMap',
+    'TIME_MAP',
     'snapSchedule',
     'runCountdownEvents',
     'waitForOnline',
