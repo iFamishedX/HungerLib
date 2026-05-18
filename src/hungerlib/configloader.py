@@ -92,6 +92,6 @@ def loadConfig(schema, runtime_path: str = "config/config.yaml"):
 
         # fallback to dataclass default
         if default is not MISSING:
-            values[f.name] = default
+            values[f.name] = convert_value(default, f.type)
 
     return schema(**values)

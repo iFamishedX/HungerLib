@@ -1,13 +1,4 @@
 run: true
-version: "4.0"
+version: "4.0.1"
 description: |
-  - Added mode "dynamic" to datamaps
-  - Cleaned configloader structure and added features:
-    - Docstrings
-    - Comments
-    - Cleaner loading
-  - Cleaned BridgeClient
-  - Removed unused imports in colormaps.py
-  - Added type hints
-  - Added docstrings
-  - Fully reorganized library
+  - Fixed TypeError
