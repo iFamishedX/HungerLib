@@ -1,6 +1,6 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from datamap import datamap, datamap_api
+from hungerlib.datamap import datamap, datamap_api
 
 
 @datamap(syntax=datamap_api.percents, mode='dynamic')
