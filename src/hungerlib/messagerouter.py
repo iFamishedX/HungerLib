@@ -1,35 +1,25 @@
-from hungerlib.datamap import mapit
-from hungerlib.utils.maps import ASCII_COLOR_MAP, MC_COLOR_MAP, STRIP_COLOR_MAP, TIME_MAP
+from mapres import MapResolver, maps
 import logging
 from pathlib import Path
 from datetime import datetime
 
-
 class MessageRouter:
-    '''
-    MessageRouter class. Paramaters:
-    - name: name of the router
-    - servers: list of Server objects
-    - log_path: path to use for file logging
-    - *_maps: list of DataMaps to use for mapping for that part
-    - *_prefix: prefix to use for the level. uses ASCII_COLOR_MAP for mapping
-    '''
-    def __init__(self,
+    def __init__(
+        self,
         name: str,
         Servers: list,
         log_path: str,
 
-        origin_maps:      list = [ASCII_COLOR_MAP],
-        destination_maps: list = [ASCII_COLOR_MAP],
-        broadcast_maps:   list = [MC_COLOR_MAP],
-        file_maps:        list = [STRIP_COLOR_MAP],
-        prefix_maps:      list = [ASCII_COLOR_MAP, TIME_MAP],
+        origin_maps      = [maps.ascii_colors],
+        destination_maps = [maps.ascii_colors],
+        broadcast_maps   = [maps.mc_colors],
+        file_maps        = [maps.strip_colors],
+        prefix_maps      = [maps.ascii_colors, maps.time_tk],
 
-        info_prefix:       str = "<white>[%hh%:%mm%:%ss%] [INFO]: ",
-        warn_prefix:       str = "<yellow>[%hh%:%mm%:%ss%] [WARN]: ",
-        error_prefix:      str = "<red>[%hh%:%mm%:%ss%] [ERROR]: ",
+        info_prefix  = "<white>[%hh%:%mm%:%ss%] [INFO]: ",
+        warn_prefix  = "<yellow>[%hh%:%mm%:%ss%] [WARN]: ",
+        error_prefix = "<red>[%hh%:%mm%:%ss%] [ERROR]: ",
     ):
-
         self.name = name
         self.Servers = Servers
 
@@ -38,12 +28,16 @@ class MessageRouter:
         self.destination_maps = destination_maps
         self.broadcast_maps = broadcast_maps
         self.file_maps = file_maps
+        self.prefix_maps = prefix_maps
 
-        # origin prefixes
+        # prefixes
         self.info_prefix = info_prefix
         self.warn_prefix = warn_prefix
         self.error_prefix = error_prefix
-        self.prefix_maps = prefix_maps
+
+        # resolver
+        self.resolver = MapResolver()
+        self.res = self.resolver.res
 
         # file logger
         self.log_path = Path(log_path)
@@ -64,90 +58,56 @@ class MessageRouter:
             handler.setFormatter(formatter)
             self.logger.addHandler(handler)
 
-    # internal utils
-    def _format(self, text: str, maps: list, **ctx) -> str:
-        return mapit(text, override_maps=maps, **ctx)
+    # like this, lowercase, no fancy bs
+    def _format(self, text, maps, **ctx):
+        return self.res(text, override_maps=maps, **ctx)
 
-    def _merge_maps(self, base: list, extra: list) -> list:
+    def _merge_maps(self, base, extra):
         maps = list(base)
         if extra:
             maps.extend(extra)
         return maps
 
     # routing primitives
-    def origin(
-        self,
-        text: str,
-        level: str = "info",
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Prints to the console MessageRouter is running on'''
-        # format
+    def origin(self, text, level="info", extra_maps=None, override_maps=None, **ctx):
         maps = self._merge_maps(override_maps or self.origin_maps, extra_maps)
         mapped = self._format(text, maps, **ctx)
-        if level == "info":    prefix = mapit(self.info_prefix, self.prefix_maps)
-        elif level == "warn":  prefix = mapit(self.warn_prefix, self.prefix_maps)
-        elif level == "error": prefix = mapit(self.error_prefix, self.prefix_maps)
-        else:                  prefix = ""
-        msg = prefix + mapped
 
-        # send
+        if level == "info":
+            prefix = self.res(self.info_prefix, override_maps=self.prefix_maps)
+        elif level == "warn":
+            prefix = self.res(self.warn_prefix, override_maps=self.prefix_maps)
+        elif level == "error":
+            prefix = self.res(self.error_prefix, override_maps=self.prefix_maps)
+        else:
+            prefix = ""
+
+        msg = prefix + mapped
         print(msg)
         return msg
 
-    def destination(
-        self,
-        text: str,
-        level: str = "info",
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Logs to all Servers using HungerBridge'''
-        # format
+    def destination(self, text, level="info", extra_maps=None, override_maps=None, **ctx):
         maps = self._merge_maps(override_maps or self.destination_maps, extra_maps)
         msg = self._format(text, maps, **ctx)
-        
-        # send
+
         for server in self.Servers:
             if hasattr(server, "bridge"):
                 server.bridge.log(msg, level)
         return msg
 
-    def broadcast(
-        self,
-        text: str,
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Sends a tellraw broadcast to all Servers'''
-        # format
+    def broadcast(self, text, extra_maps=None, override_maps=None, **ctx):
         maps = self._merge_maps(override_maps or self.broadcast_maps, extra_maps)
         msg = self._format(text, maps, **ctx)
 
-        # send
         for server in self.Servers:
             if hasattr(server, "sendBroadcast"):
                 server.sendBroadcast(msg)
         return msg
 
-    def filelog(
-        self,
-        text: str,
-        level: str = "info",
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Logs to file and strips colors by default'''
-        # format
+    def filelog(self, text, level="info", extra_maps=None, override_maps=None, **ctx):
         maps = self._merge_maps(override_maps or self.file_maps, extra_maps)
         msg = self._format(text, maps, **ctx)
 
-        # send
         {
             "info": self.logger.info,
             "warn": self.logger.warning,
@@ -155,39 +115,18 @@ class MessageRouter:
         }[level](msg)
         return msg
 
-    # simple passthrough helpers (origin + file)
-    def info(
-        self,
-        text: str,
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Sends an "info" log to the origin and file'''
-        msg = self.origin(text=text, level="info", extra_maps=extra_maps, override_maps=override_maps, **ctx)
-        self.filelog(text=text, level="info", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+    # passthrough helpers
+    def info(self, text, extra_maps=None, override_maps=None, **ctx):
+        msg = self.origin(text, "info", extra_maps, override_maps, **ctx)
+        self.filelog(text, "info", extra_maps, override_maps, **ctx)
         return msg
 
-    def warn(
-        self,
-        text: str,
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Sends a "warn" log to the origin and file'''
-        msg = self.origin(text=text, level="warn", extra_maps=extra_maps, override_maps=override_maps, **ctx)
-        self.filelog(text=text, level="warn", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+    def warn(self, text, extra_maps=None, override_maps=None, **ctx):
+        msg = self.origin(text, "warn", extra_maps, override_maps, **ctx)
+        self.filelog(text, "warn", extra_maps, override_maps, **ctx)
         return msg
 
-    def error(
-        self,
-        text: str,
-        extra_maps: list | None = None,
-        override_maps: list | None = None,
-        **ctx
-    ) -> str:
-        '''Sends an "error" log to the origin and file'''
-        msg = self.origin(text=text, level="error", extra_maps=extra_maps, override_maps=override_maps, **ctx)
-        self.filelog(text=text, level="error", extra_maps=extra_maps, override_maps=override_maps, **ctx)
+    def error(self, text, extra_maps=None, override_maps=None, **ctx):
+        msg = self.origin(text, "error", extra_maps, override_maps, **ctx)
+        self.filelog(text, "error", extra_maps, override_maps, **ctx)
         return msg

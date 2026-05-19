@@ -1,4 +1,4 @@
 run: true
-version: "4.7.2"
+version: "4.8"
 description: |
-  - Fixed RawNamespace
+  - Removed mapit in favor of mapres

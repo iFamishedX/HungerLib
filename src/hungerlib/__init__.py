@@ -9,16 +9,11 @@ except PackageNotFoundError:
 
 # modules
 from .configloader import loadConfig
-from .datamap import setGlobalMaps, getGlobalMaps, Syntax, DataMap, datamap, mapit
 from .messagerouter import MessageRouter
 from .panel import Panel
 from .servers import GenericServer, MinecraftServer
 from .bridgeclient import BridgeClient
 from .utils import (
-    ColorMap,
-    ASCII_COLOR_MAP,
-    MC_COLOR_MAP,
-    STRIP_COLOR_MAP,
     snapSchedule,
     runCountdownEvents,
     waitForOnline,
@@ -28,18 +23,10 @@ from .utils import (
     Snapshot,
     clearTerminal,
     validateAll,
-    TimeMap,
-    TIME_MAP,
 )
 
 # namespaces
 utils = SimpleNamespace(
-    ColorMap = ColorMap,
-    ASCII_COLOR_MAP = ASCII_COLOR_MAP,
-    MC_COLOR_MAP = MC_COLOR_MAP,
-    STRIP_COLOR_MAP = STRIP_COLOR_MAP,
-    TimeMap = TimeMap,
-    TIME_MAP = TIME_MAP,
     snapSchedule = snapSchedule,
     runCountdownEvents = runCountdownEvents,
     waitForOnline = waitForOnline,
@@ -57,20 +44,6 @@ servers = SimpleNamespace(
     Minecraft = MinecraftServer,
 )
 
-datamap_api = SimpleNamespace(
-    setGlobalMaps = setGlobalMaps,
-    getGlobalMaps = getGlobalMaps,
-    Syntax = Syntax,
-    DataMap = DataMap,
-    decorator = datamap,
-    mapit = mapit,
-
-    braces = Syntax.braces,
-    dollars = Syntax.dollars,
-    angles = Syntax.angles,
-    percents = Syntax.percents,
-)
-
 
 
 __all__ = [
@@ -80,20 +53,8 @@ __all__ = [
     'loadConfig',
     'MessageRouter',
     'Panel',
-    'setGlobalMaps',
-    'getGlobalMaps',
-    'Syntax',
-    'DataMap',
-    'datamap',
-    'mapit',
     'GenericServer',
     'MinecraftServer',
-    'ColorMap',
-    'ASCII_COLOR_MAP',
-    'MC_COLOR_MAP',
-    'STRIP_COLOR_MAP',
-    'TimeMap',
-    'TIME_MAP',
     'snapSchedule',
     'runCountdownEvents',
     'waitForOnline',
@@ -108,5 +69,4 @@ __all__ = [
     # namespaces
     'utils',
     'servers',
-    'datamap_api',
 ]
