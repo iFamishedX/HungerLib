@@ -42,16 +42,22 @@ def convert_value(value, annotation):
 class RawNamespace:
     """
     Provides attribute-style access to raw YAML values.
-    Supports dotted paths like panel.url → raw["panel"]["url"].
-    Missing keys return None.
+    Uses the dataclass default (YAML path) instead of guessing.
     """
-    def __init__(self, raw_dict):
+    def __init__(self, raw_dict, schema):
         self._raw = raw_dict
+        self._schema = schema
 
     def __getattr__(self, name):
-        # Convert attribute name (field name) into YAML dotted path
-        # Example: panel_url → panel.url
-        yaml_path = name.replace("_", ".")
+        # Look up the YAML path from the dataclass default
+        field = self._schema.__dataclass_fields__.get(name)
+        if not field:
+            return None
+
+        yaml_path = field.default  # e.g. "panel.api_key"
+        if not isinstance(yaml_path, str):
+            return None
+
         return self._deep_get(self._raw, yaml_path)
 
     def _deep_get(self, data, path):
@@ -138,6 +144,6 @@ def loadConfig(schema, runtime_path: str | None = None):
     config.fallbacks = fallbacks
 
     # 9. Attach raw YAML namespace
-    config.raw = RawNamespace(raw)
+    config.raw = RawNamespace(raw, schema)
 
     return config
