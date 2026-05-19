@@ -1,5 +1,5 @@
 from hungerlib.datamap import mapit
-from hungerlib.utils.colormaps import ASCII_COLOR_MAP, MC_COLOR_MAP, STRIP_COLOR_MAP
+from hungerlib.utils.maps import ASCII_COLOR_MAP, MC_COLOR_MAP, STRIP_COLOR_MAP, TIME_MAP
 import logging
 from pathlib import Path
 from datetime import datetime
@@ -23,10 +23,11 @@ class MessageRouter:
         destination_maps: list = [ASCII_COLOR_MAP],
         broadcast_maps:   list = [MC_COLOR_MAP],
         file_maps:        list = [STRIP_COLOR_MAP],
+        prefix_maps:      list = [ASCII_COLOR_MAP, TIME_MAP],
 
-        info_prefix:       str = "<white>[INFO]: ",
-        warn_prefix:       str = "<yellow>[WARN]: ",
-        error_prefix:      str = "<red>[ERROR]: ",
+        info_prefix:       str = "<white>[%hh%:%mm%:%ss%] [INFO]: ",
+        warn_prefix:       str = "<yellow>[%hh%:%mm%:%ss%] [WARN]: ",
+        error_prefix:      str = "<red>[%hh%:%mm%:%ss%] [ERROR]: ",
     ):
 
         self.name = name
@@ -42,6 +43,7 @@ class MessageRouter:
         self.info_prefix = info_prefix
         self.warn_prefix = warn_prefix
         self.error_prefix = error_prefix
+        self.prefix_maps = prefix_maps
 
         # file logger
         self.log_path = Path(log_path)
@@ -85,9 +87,9 @@ class MessageRouter:
         # format
         maps = self._merge_maps(override_maps or self.origin_maps, extra_maps)
         mapped = self._format(text, maps, **ctx)
-        if level == "info":    prefix = mapit(self.info_prefix, [ASCII_COLOR_MAP])
-        elif level == "warn":  prefix = mapit(self.warn_prefix, [ASCII_COLOR_MAP])
-        elif level == "error": prefix = mapit(self.error_prefix, [ASCII_COLOR_MAP])
+        if level == "info":    prefix = mapit(self.info_prefix, self.prefix_maps)
+        elif level == "warn":  prefix = mapit(self.warn_prefix, self.prefix_maps)
+        elif level == "error": prefix = mapit(self.error_prefix, self.prefix_maps)
         else:                  prefix = ""
         msg = prefix + mapped
 
