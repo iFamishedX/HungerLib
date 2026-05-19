@@ -2,10 +2,8 @@ import time
 import re
 
 from hungerlib.panel import Panel
-from hungerlib.utils.colormaps import MC_COLOR_MAP, ASCII_COLOR_MAP
 from hungerlib.servers import GenericServer
 from hungerlib.bridgeclient import BridgeClient
-from hungerlib.datamap import mapit
 
 
 class MinecraftServer(GenericServer):
