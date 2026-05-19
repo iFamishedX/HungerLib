@@ -42,13 +42,27 @@ def convert_value(value, annotation):
 class RawNamespace:
     """
     Provides attribute-style access to raw YAML values.
+    Supports dotted paths like panel.url → raw["panel"]["url"].
     Missing keys return None.
     """
     def __init__(self, raw_dict):
-        self.__dict__.update(raw_dict)
+        self._raw = raw_dict
 
     def __getattr__(self, name):
-        return None
+        # Convert attribute name (field name) into YAML dotted path
+        # Example: panel_url → panel.url
+        yaml_path = name.replace("_", ".")
+        return self._deep_get(self._raw, yaml_path)
+
+    def _deep_get(self, data, path):
+        cur = data
+        for part in path.split("."):
+            if not isinstance(cur, dict):
+                return None
+            cur = cur.get(part)
+            if cur is None:
+                return None
+        return cur
 
 
 # main loader

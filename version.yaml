@@ -1,4 +1,4 @@
 run: true
-version: "4.7"
+version: "4.7.1"
 description: |
-  - Added .raw namespace for configs
+  - Fixed RawNamespace
