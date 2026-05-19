@@ -24,17 +24,36 @@ class TimeMap:
 
     @property
     def providers(self):
+        now = lambda: datetime.now(self.TZ)
+
         return {
-            'hh':      lambda: f'{datetime.now(self.TZ).hour:02d}',
-            'mm':      lambda: f'{datetime.now(self.TZ).minute:02d}',
-            'ss':      lambda: f'{datetime.now(self.TZ).second:02d}',
-            'ms':      lambda: f'{int(datetime.now(self.TZ).microsecond / 1000):03d}',
+            # 24-hour formats
+            'hh':   lambda: f'{now().hour:02d}',   # 00–23 padded
+            'h':    lambda: str(now().hour),       # 0–23 no pad
 
-            'YYYY':    lambda: str(datetime.now(self.TZ).year),
-            'MM':      lambda: f'{datetime.now(self.TZ).month:02d}',
-            'DD':      lambda: f'{datetime.now(self.TZ).day:02d}',
+            # 12-hour formats
+            'h12':  lambda: str((now().hour % 12) or 12),              # 1–12 no pad
+            'hh12': lambda: f'{(now().hour % 12) or 12:02d}',          # 01–12 padded
+            'ampm': lambda: now().strftime('%p'),                      # AM / PM
 
-            'weekday': lambda: datetime.now(self.TZ).strftime('%A'),
+            # minutes
+            'mm':   lambda: f'{now().minute:02d}',  # 00–59 padded
+            'm':    lambda: str(now().minute),      # 0–59 no pad
+
+            # seconds
+            'ss':   lambda: f'{now().second:02d}',  # 00–59 padded
+            's':    lambda: str(now().second),      # 0–59 no pad
+
+            # milliseconds
+            'ms':   lambda: f'{int(now().microsecond / 1000):03d}',
+
+            # date
+            'YYYY': lambda: str(now().year),
+            'MM':   lambda: f'{now().month:02d}',
+            'DD':   lambda: f'{now().day:02d}',
+
+            # weekday
+            'weekday': lambda: now().strftime('%A'),
         }
 
 # proxy map
