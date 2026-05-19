@@ -1,9 +1,9 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from hungerlib.datamap import datamap, datamap_api
+from hungerlib.datamap import datamap, Syntax
 
 
-@datamap(syntax=datamap_api.percents, mode='dynamic')
+@datamap(syntax=Syntax.percents, mode='dynamic')
 class TimeMap:
     # default timezone
     _default_tz = ZoneInfo('UTC')
