@@ -13,6 +13,7 @@ from .messagerouter import MessageRouter
 from .panel import Panel
 from .servers import GenericServer, MinecraftServer
 from .bridgeclient import BridgeClient
+from .validator import Validator, ValidationError
 from .utils import (
     snapSchedule,
     runCountdownEvents,
@@ -49,12 +50,16 @@ servers = SimpleNamespace(
 __all__ = [
     '__version__',
 
-    # modules
+    # core modules
     'loadConfig',
     'MessageRouter',
     'Panel',
     'GenericServer',
     'MinecraftServer',
+    'BridgeClient',
+    'Validator',
+
+    # sub-modules
     'snapSchedule',
     'runCountdownEvents',
     'waitForOnline',
@@ -64,7 +69,7 @@ __all__ = [
     'Snapshot',
     'clearTerminal',
     'validateAll',
-    'BridgeClient',
+    'ValidationError',
 
     # namespaces
     'utils',

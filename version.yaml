@@ -1,4 +1,5 @@
 run: true
-version: "4.8.1"
+version: "4.9"
 description: |
-  - Added mapres as a dependency
+  - Added Validator class
+  - Changed init structure
