@@ -2,6 +2,7 @@ from mapres import MapResolver, maps
 import logging
 from pathlib import Path
 from datetime import datetime
+from .utils.exceptions import InvalidLevelError
 
 class MessageRouter:
     def __init__(
@@ -79,8 +80,11 @@ class MessageRouter:
             prefix = self.res(self.warn_prefix, override_maps=self.prefix_maps)
         elif level == "error":
             prefix = self.res(self.error_prefix, override_maps=self.prefix_maps)
-        else:
+        elif prefix is None:
             prefix = ""
+        else:
+            raise InvalidLevelError(f'"{level}" is not a valid log level')
+
 
         msg = prefix + mapped
         print(msg)

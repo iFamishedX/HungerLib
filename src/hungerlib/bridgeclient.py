@@ -1,29 +1,31 @@
 import requests
 import json
+from .utils.exceptions import HungerBridgeError, InvalidLevelError
+
 
 class BridgeClient:
     '''HungerBridge client. Usually used internally, but can be used externally.'''
     def __init__(self, url: str, token: str):
-        self.base = url.rstrip("/")
+        self.base = url.rstrip('/')
         self.headers = {
-            "X-Auth-Key": token,
-            "Content-Type": "application/json"
+            'X-Auth-Key': token,
+            'Content-Type': 'application/json'
         }
 
     # internal functions
     def _post(self, path, payload):
-        r = requests.post(f"{self.base}{path}", headers=self.headers, json=payload)
+        r = requests.post(f'{self.base}{path}', headers=self.headers, json=payload)
         if not r.ok:
-            raise RuntimeError(f"HungerBridge error {r.status_code}: {r.text}")
+            raise RuntimeError(f'HungerBridge error {r.status_code}: {r.text}')
         try:
             return r.json()
         except:
             return r.text
 
     def _get(self, path):
-        r = requests.get(f"{self.base}{path}", headers=self.headers)
+        r = requests.get(f'{self.base}{path}', headers=self.headers)
         if not r.ok:
-            raise RuntimeError(f"HungerBridge error {r.status_code}: {r.text}")
+            raise RuntimeError(f'HungerBridge error {r.status_code}: {r.text}')
         try:
             return r.json()
         except:
@@ -45,19 +47,19 @@ class BridgeClient:
         - silent: if the command should not return output
         - normalize: if the json should be returned as a string
         '''
-        data = self._post("/v1/run", {
-            "command": command,
-            "silent": silent,
-            "show_console": show_console
+        data = self._post('/v1/run', {
+            'command': command,
+            'silent': silent,
+            'show_console': show_console
         })
         if not normalize:
             return data
         if isinstance(data, list):
-            return "\n".join(str(x) for x in data)
+            return '\n'.join(str(x) for x in data)
         if isinstance(data, dict):
-            out = data.get("output")
+            out = data.get('output')
             if isinstance(out, list):
-                return "\n".join(str(x) for x in out)
+                return '\n'.join(str(x) for x in out)
             if isinstance(out, (str, bytes)):
                 return out
             return None
@@ -65,7 +67,7 @@ class BridgeClient:
             return data
         return None
 
-    def log(self, message: str, level: str = "info") -> dict:
+    def log(self, message: str, level: str = 'info') -> dict:
         '''
         Log something on the server. Levels:
         - info
@@ -73,15 +75,26 @@ class BridgeClient:
         - error
         - None
         '''
-        return self._post("/v1/log", {
-            "level": level,
-            "message": message
-        })
+        valid_levels = ['info', 'warn', 'error', None]
+        if level not in valid_levels:
+            raise InvalidLevelError(f'"{level}" is not a valid log level')
+
+        if level is not None:
+            return self._post('/v1/log', {
+                'level': level,
+                'message': message
+            })
+        else:
+            no_level_message = f'\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b{message}'      # uses backspaces to remove level
+            return self._post('/v1/log', {
+                'level': 'info',
+                'message': no_level_message
+            })
 
     def getStatus(self) -> dict:
         '''Returns the status of the server'''
-        return self._get("/v1/status")
+        return self._get('/v1/status')
 
     def getVersion(self) -> dict:
         '''Returns the version of the bridge and server'''
-        return self._get("/v1/version")
+        return self._get('/v1/version')
