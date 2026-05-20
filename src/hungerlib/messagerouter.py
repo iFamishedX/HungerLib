@@ -14,7 +14,7 @@ class MessageRouter:
         destination_maps = [maps.ascii_colors],
         broadcast_maps   = [maps.mc_colors],
         file_maps        = [maps.strip_colors],
-        prefix_maps      = [maps.ascii_colors, maps.time_tk],
+        prefix_maps      = [maps.ascii_colors, maps.time],
 
         info_prefix  = "<white>[%hh%:%mm%:%ss%] [INFO]: ",
         warn_prefix  = "<yellow>[%hh%:%mm%:%ss%] [WARN]: ",
