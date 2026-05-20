@@ -28,6 +28,7 @@ dependencies = [
     "requests",
     "mcrcon",
     "PyYaml",
+    "mapres",
 ]
 
 classifiers = [
