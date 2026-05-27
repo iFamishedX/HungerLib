@@ -1,8 +1,7 @@
 run: true
-version: "4.12"
+version: "4.13"
 description: |
   - Improved BridgeClient
     - Support for new endpoints
     - Added InvalidModeError exception
-    - Will add more type hints later
-  - Removed support of HungerBridge API v1
+    - Added more type hints
