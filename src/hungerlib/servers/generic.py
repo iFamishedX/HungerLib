@@ -248,21 +248,3 @@ class GenericServer:
                     "tasks": attr.get("relationships", {}).get("tasks", {}).get("data", [])
                 }
         return None
-
-
-
-    # health snapshot
-    def snapshot(self) -> dict:
-        '''
-        Simple snapshot. Use utils.Snapshot for a better snapshot.
-        This will be deprecated in a future release!
-        '''
-        return {
-            "ram": self.getRAM(),
-            "cpu": self.getCPU(),
-            "disk": self.getDisk(),
-            "network_in": self.getNetworkIn(),
-            "network_out": self.getNetworkOut(),
-            "uptime": self.getUptime(),
-            "status": self.getStatus()
-        }
