@@ -1,7 +1,4 @@
 run: true
-version: "4.17"
+version: "4.18"
 description: |
-  - Revamped Snapshot class
-    - Outlier dropping
-    - Smoothing
-  - Removed GenericServer.snapshot()
+  - Rewrite validator

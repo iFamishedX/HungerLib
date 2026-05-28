@@ -1,90 +1,123 @@
-from .utils.exceptions import ValidationError, FatalValidationError, ValidationFallbacks
+from dataclasses import fields
+from .utils.exceptions import FatalValidationError, ValidationFallbacks
 
 
 class Validator:
     """
-    Reusable base validator for dataclass-based config objects.
+    Generic rules-driven validator for datamap-based config objects.
 
-    Provides:
-    - error/warning/default tracking
+    Performs ONLY:
     - type checking
-    - fallback checking
-    - structured reporting
-    - subclass hooks for project-specific rules
+    - missing key checking
+    - fallback usage checking
+    - rule checking (required / recommended / optional)
+    - message templating
+
+    No domain-specific validation.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        msg_missing_required="{field}: missing required key",
+        msg_missing_recommended="{field}: key missing, using fallback {fallback}",
+        msg_fallback_required="{field}: must not use fallback (got {value})",
+        msg_fallback_recommended="{field}: using fallback {value}",
+        msg_type_mismatch="{schema}.{field}: expected {expected}, got {actual} ({value!r})",
+    ):
         self.errors: list[str] = []
         self.warnings: list[str] = []
         self.defaults: list[str] = []
 
-    # reusable helpers
-    def validate_key_types(self, config_obj, schema):
-        """
-        Validate that each field in the dataclass matches its annotated type.
-        """
-        from dataclasses import fields
+        # message templates
+        self.msg_missing_required = msg_missing_required
+        self.msg_missing_recommended = msg_missing_recommended
+        self.msg_fallback_required = msg_fallback_required
+        self.msg_fallback_recommended = msg_fallback_recommended
+        self.msg_type_mismatch = msg_type_mismatch
 
+    # type checking
+    def validate_key_types(self, config_obj, schema):
         for f in fields(schema):
             if f.name.startswith("__"):
                 continue
 
-            expected_type = f.type
+            expected = f.type
             value = getattr(config_obj, f.name, None)
 
             if value is None:
                 continue
 
-            if not isinstance(value, expected_type):
-                self.errors.append(
-                    f'{schema.__name__}.{f.name}: expected {expected_type.__name__}, '
-                    f'got "{type(value).__name__}" ({value!r})'
-                )
+            try:
+                if not isinstance(value, expected):
+                    self.errors.append(
+                        self.msg_type_mismatch.format(
+                            schema=schema.__name__,
+                            field=f.name,
+                            expected=getattr(expected, "__name__", str(expected)),
+                            actual=type(value).__name__,
+                            value=value,
+                        )
+                    )
+            except TypeError:
+                # ignore typing constructs that break isinstance
+                pass
 
-    def check_field(self, config_obj, name: str, allow_fallback: bool = True):
-        """
-        Unified check for:
-        - missing YAML key (config.raw.<name> is None)
-        - fallback usage (config.<name> == config.fallbacks.<name>)
-        - whether fallback is allowed or not
-        """
-        raw = config_obj.raw
-        fb = config_obj.fallbacks
+    # rule lookup
+    def _get_rule_level(self, config_obj, name: str) -> str:
+        rules = getattr(config_obj.__class__, "rules", None)
+        if rules is None:
+            return "optional"
+        return getattr(rules, name, "optional")
+
+    # field checking
+    def check_field(self, config_obj, name: str):
+        raw = getattr(config_obj, "raw", None)
+        fb = getattr(config_obj, "fallbacks", None)
+
+        if raw is None or fb is None:
+            return
 
         val = getattr(config_obj, name)
         raw_val = getattr(raw, name)
         fb_val = getattr(fb, name)
 
+        level = self._get_rule_level(config_obj, name)
+
+        # missing YAML key
         if raw_val is None:
-            if allow_fallback:
-                self.warnings.append(f'{name}: key does not exist, using fallback "{fb_val}"')
-            else:
-                self.errors.append(f'{name}: key does not exist and fallback is not allowed')
+            if level == "required":
+                self.errors.append(
+                    self.msg_missing_required.format(field=name)
+                )
+            elif level == "recommended":
+                self.warnings.append(
+                    self.msg_missing_recommended.format(field=name, fallback=fb_val)
+                )
             return
 
-        if val == fb_val and not allow_fallback:
-            self.defaults.append(f'{name}: must not be left default or empty (got "{val}")')
+        # fallback usage
+        if fb_val is not None and val == fb_val:
+            if level == "required":
+                self.errors.append(
+                    self.msg_fallback_required.format(field=name, value=val)
+                )
+            elif level == "recommended":
+                self.warnings.append(
+                    self.msg_fallback_recommended.format(field=name, value=val)
+                )
 
-    # subclass override hooks
+    # subclass hook
     def validate_schema(self, config_obj):
-        """
-        Override in subclasses to implement project-specific validation rules.
-        """
         pass
 
     # orchestration
     def run(self, *configs):
-        """
-        Run validation on one or more config objects.
-        """
         for cfg in configs:
             self.validate_schema(cfg)
 
-        # fatal errors first
         if self.errors:
             raise FatalValidationError(self.format_report())
 
-        # defaults but no errors
         if self.defaults:
             raise ValidationFallbacks(self.format_report())
 
@@ -92,9 +125,6 @@ class Validator:
 
     # reporting
     def format_report(self) -> str:
-        """
-        Format all errors, warnings, and defaults into a readable string.
-        """
         out = []
 
         if self.errors:
