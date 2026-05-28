@@ -1,10 +1,11 @@
+import time
 import requests
 from .utils.exceptions import HungerBridgeError, InvalidLevelError, InvalidModeError
 
 
 class BridgeClient:
     '''
-    Python client for the HungerBridge v2 API.
+    Python client for the HungerBridge v2 API
     '''
     def __init__(self, url: str, token: str):
         self.base = url.rstrip('/') + '/v2/'
@@ -37,28 +38,21 @@ class BridgeClient:
             raise HungerBridgeError('_extract() expects a dict response')
         return data.get(field)
 
-
     # raw endpoints
     def v2_ping(self) -> dict:
-        '''Returns dict of /v2/ping'''
         return self._get('ping')
 
     def v2_info(self) -> dict:
-        '''Returns dict of /v2/info'''
         return self._get('info')
 
     def v2_status(self) -> dict:
-        '''Returns dict of /v2/status'''
         return self._get('status')
 
     def v2_tps(self) -> dict:
-        '''Returns dict of /v2/tps'''
         return self._get('tps')
 
     def v2_players(self) -> dict:
-        '''Returns dict of /v2/players'''
         return self._get('players')
-
 
     # public api
     def runCommand(
@@ -67,9 +61,10 @@ class BridgeClient:
         show_console: bool = False,
         silent: bool = False,
         normalize: bool = True
-    ) -> str | dict | None:
+    ):
         '''
-        Runs a command on the server.
+        Execute a command on the server.
+        Returns normalized output unless normalize=False.
         '''
         data = self._post('run', {
             'command': command,
@@ -93,7 +88,7 @@ class BridgeClient:
 
     def log(self, message: str, level: str = 'info') -> dict:
         '''
-        Logs a message to the server.
+        Logs a message to the server console
         '''
         valid_levels = ['info', 'warn', 'error', None]
         if level not in valid_levels:
@@ -109,66 +104,68 @@ class BridgeClient:
             'message': no_level_message
         })
 
+    # convenience getters
     def getPing(self) -> int:
-        '''Returns connection latency'''
-        return self._extract(self.v2_ping(), 'latency_ms')
+        '''
+        Round-trip latency (ms) measured client-side.
+        '''
+        start = time.time()
+        self.v2_ping()
+        end = time.time()
+        return int((end - start) * 1000)
 
     def getVersion(self) -> str | None:
-        '''Returns the bridge version'''
+        '''Returns HungerBridge version'''
         info = self.v2_info()
         bridge = self._extract(info, 'bridge')
         return bridge.get('version') if isinstance(bridge, dict) else None
-    
+
     def getPlatform(self) -> str | None:
-        '''Returns the platform'''
+        '''Returns server platform'''
         info = self.v2_info()
         bridge = self._extract(info, 'bridge')
         return bridge.get('platform') if isinstance(bridge, dict) else None
 
     def getMinecraftVersion(self) -> str | None:
-        '''Returns the Minecraft version'''
+        '''Returns Minecraft version'''
         info = self.v2_info()
         bridge = self._extract(info, 'bridge')
         return bridge.get('minecraft') if isinstance(bridge, dict) else None
-    
-    def getStatus(self) -> str:
-        '''Validates bridge connection'''
+
+    def getStatus(self) -> bool:
+        '''Validates connection status'''
         return self._extract(self.v2_status(), 'ok')
 
-    def getTPS(self, mode: str = 'current') -> int:
+    def getTPS(self, mode: str = 'current') -> float:
         '''
-        mode can be:
-            current: current tps
-            1m: average tps in the past minute
-            5m: average tps in the past 5 minutes
-            15m: average tps in the past 15 minutes
-            tick_time: current tick time in ms
+        Returns TPS values:
+        - current:   EMA20
+        - 1m:        EMA1200
+        - 5m:        EMA6000
+        - tick_time: avg tick time (ms)
         '''
         data = self.v2_tps()
         if mode == 'current':
             return self._extract(data, 'tps')
-        elif mode == '1m':
+        if mode == '1m':
             return self._extract(data, 'tps_1m')
-        elif mode == '5m':
+        if mode == '5m':
             return self._extract(data, 'tps_5m')
-        elif mode == '15m':
-            return self._extract(data, 'tps_15m')
-        elif mode == 'tick_time':
+        if mode == 'tick_time':
             return self._extract(data, 'tick_time_ms')
-        else:
-            raise InvalidModeError(f'Invalid mode: \'{mode}\'')
+
+        raise InvalidModeError(f'Invalid mode: \'{mode}\'')
 
     def getPlayers(self, mode: str = 'count') -> int | list:
         '''
-        mode can be:
-            count: returns online player count
-            list: returns all online player names in a list
+        Returns:
+        - count: number of players
+        - list: list of player names
         '''
         data = self.v2_players()
 
         if mode == 'count':
             return self._extract(data, 'count')
-        elif mode == 'list':
+        if mode == 'list':
             return self._extract(data, 'players')
-        else:
-            raise InvalidModeError(f'Invalid mode: \'{mode}\'')
+        raise InvalidModeError(f'Invalid mode: \'{mode}\'')

@@ -4,10 +4,11 @@ import re
 from hungerlib.panel import Panel
 from hungerlib.servers import GenericServer
 from hungerlib.bridgeclient import BridgeClient
+from hungerlib.utils.exceptions import InvalidModeError
 
 
 class MinecraftServer(GenericServer):
-    '''Minecraft Pterodacty Server'''
+    '''Minecraft Pterodactyl Server'''
     def __init__(
         self,
         name: str,
@@ -17,7 +18,6 @@ class MinecraftServer(GenericServer):
         server_port: int,
         bridge_port: int,
         bridge_token: str,
-        tpsCommand: str = 'tt20 tps',
     ):
         super().__init__(
             name,
@@ -28,43 +28,32 @@ class MinecraftServer(GenericServer):
         # Minecraft-specific fields
         self.server_domain = server_domain
         self.server_port = server_port
-        self.tpsCommand = tpsCommand
 
         # HungerBridge client
-        bridge_url = f"http://{server_domain}:{bridge_port}"
+        bridge_url = f'http://{server_domain}:{bridge_port}'
         self.bridge = BridgeClient(bridge_url, bridge_token)
 
 
-    # getter methods
-    def getPlayers(self) -> int | None:
+    def getPlayers(self, mode: str = 'count') -> int | list | None:
         '''Returns current online players'''
-        output = self.bridge.runCommand("list")
-        if not output:
-            return None
-        m = re.search(r"There are (\d+)", output)
-        return int(m.group(1)) if m else None
+        if mode == 'count':
+            return self.bridge.getPlayers('count')
+        elif mode == 'list':
+            return self.bridge.getPlayers('list')
+        else:
+            raise InvalidModeError(f"Invalid mode: '{mode}'")
 
-    def getTPS(self, type: str = "raw", rounding: int = 10) -> float| None:
-        """
-        This has limitations and is not yet complete. It currently ONLY parses TT20's tps command.
-        Example: /tt20 tps
-        This parser WILL NOT WORK with other configurations!
-        In the future, this will likely be replaced by a native HungerBridge tps command.
-        """
-        output = self.sendConsoleCommand(self.tpsCommand)
-        if not output:
+    def getTPS(self, mode: str = 'current', rounding: int = 3) -> float | None:
+        '''
+        HungerBridge-native TPS getter
+        '''
+        try:
+            value = self.bridge.getTPS(mode)
+        except InvalidModeError:
             return None
-        clean = re.sub(r"§.", "", output)
-        m = re.search(
-            r"TPS\s+([0-9]+\.[0-9]+)\s+with average\s+([0-9]+\.[0-9]+)\s+accurate\s+([0-9]+\.[0-9]+)",
-            clean
-        )
-        if not m:
+        if value is None:
             return None
-        raw, avg, acc = map(float, m.groups())
-        table = {"raw": raw, "avg": avg, "acc": acc}
-        value = table.get(type, avg)
-        return round(value, rounding) if rounding else value
+        return round(value, rounding) if rounding is not None else value
 
     # commands
     def sendConsoleCommand(
@@ -76,11 +65,11 @@ class MinecraftServer(GenericServer):
     ):
         '''Runs a Minecraft command with optional output capture'''
         return self.bridge.runCommand(
-        command,
-        show_console=show_console,
-        silent=silent,
-        normalize=normalize
-    )
+            command,
+            show_console=show_console,
+            silent=silent,
+            normalize=normalize
+        )
 
     def sendBroadcast(self, message: str):
         '''Sends a broadcast using tellraw'''
