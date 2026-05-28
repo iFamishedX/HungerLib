@@ -1,4 +1,4 @@
-from .utils.exceptions import ValidationError
+from .utils.exceptions import ValidationError, FatalValidationError, ValidationFallbacks
 
 
 class Validator:
