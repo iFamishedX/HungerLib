@@ -78,7 +78,7 @@ class Validator:
             return
 
         val = getattr(obj, name)
-        raw_val = getattr(raw, name)
+        raw_val = raw.__dict__.get(name, None)
         fb_val = getattr(fb, name)
         level = self._rule(obj, name)
 
