@@ -18,10 +18,6 @@ class RecommendedError(ValidationError): pass
 class Validator:
     def __init__(
         self,
-        throw_on_required=True,
-        throw_on_type_mismatch=True,
-        throw_on_fallback=False,
-        throw_on_recommended=False,
 
         msg_missing_required="{field}: missing required key",
         msg_missing_recommended="{field}: key missing, using fallback {fallback}",
@@ -34,12 +30,6 @@ class Validator:
         self.warnings = []
         self.fallbacks = []
         self.recommended = []
-
-        # throw behavior
-        self.throw_on_required = throw_on_required
-        self.throw_on_type_mismatch = throw_on_type_mismatch
-        self.throw_on_fallback = throw_on_fallback
-        self.throw_on_recommended = throw_on_recommended
 
         # message templates
         self.msg_missing_required = msg_missing_required
@@ -119,19 +109,19 @@ class Validator:
         report = self.format_report()
 
         # required errors
-        if self.errors and self.throw_on_required:
+        if self.errors:
             raise FatalError(report, self.errors, self.warnings, self.fallbacks, self.recommended)
 
         # type mismatch
-        if self.throw_on_type_mismatch and any("expected" in e for e in self.errors):
+        if any("expected" in e for e in self.errors):
             raise TypeMismatchError(report, self.errors, self.warnings, self.fallbacks, self.recommended)
 
         # fallback used
-        if self.throw_on_fallback and self.fallbacks:
+        if self.fallbacks:
             raise FallbackError(report, self.errors, self.warnings, self.fallbacks, self.recommended)
 
         # recommended missing
-        if self.throw_on_recommended and self.recommended:
+        if self.recommended:
             raise RecommendedError(report, self.errors, self.warnings, self.fallbacks, self.recommended)
 
         return report
