@@ -1,4 +1,5 @@
 import time
+import math
 from datetime import datetime, timedelta
 
 def snapSchedule(minimumMinutes: int = 30, snapMinutes: tuple[int, int] = (0, 30)) -> dict:
@@ -40,7 +41,7 @@ def runCountdownEvents(
 
     while True:
         now = datetime.now()
-        seconds_left = int((target_time - now).total_seconds())
+        seconds_left = math.ceil((target_time - now).total_seconds())
         minutes_left = seconds_left // 60
 
         # Countdown finished
