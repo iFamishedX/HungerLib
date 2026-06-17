@@ -43,6 +43,24 @@ class MinecraftServer(GenericServer):
         else:
             raise InvalidModeError(f"Invalid mode: '{mode}'")
 
+    def getMaxPlayers(self) -> int:
+        '''
+        Runs the 'list' command and extracts the max player count.
+        Expected format:
+        There are 0 of a max of 20 players online:
+        '''
+        try:
+            output = self.bridge.runCommand('list', show_console=False, silent=True, normalize=True)
+        except Exception:
+            return 0
+        if not output:
+            return 0
+        # Regex for: "There are X of a max of Y players"
+        match = re.search(r'There are \d+ of a max of (\d+) players', output)
+        if match:
+            return int(match.group(1))
+        return 0
+
     def getTPS(self, mode: str = 'current', rounding: int = 3) -> float | None:
         '''
         HungerBridge-native TPS getter
