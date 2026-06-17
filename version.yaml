@@ -1,4 +1,4 @@
 run: true
-version: "4.19.4"
+version: "4.19.5"
 description: |
-  - Temporarily reverted runCountdownEvents timer fix
+  - Fixed logic error

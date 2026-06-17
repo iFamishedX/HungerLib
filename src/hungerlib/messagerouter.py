@@ -80,7 +80,7 @@ class MessageRouter:
             prefix = self.res(self.warn_prefix, override_maps=self.prefix_maps)
         elif level == "error":
             prefix = self.res(self.error_prefix, override_maps=self.prefix_maps)
-        elif prefix is None:
+        elif level is None:
             prefix = ""
         else:
             raise InvalidLevelError(f'"{level}" is not a valid log level')
