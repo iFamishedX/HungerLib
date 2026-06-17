@@ -59,7 +59,7 @@ class Snapshot:
             self.network_in = smooth(samples['network_in'])
             self.network_out = smooth(samples['network_out'])
             self.tps = smooth(samples['tps'])
-            self.players = smooth(samples['players'])
+            self.players = Server.getPlayers('count')
 
         # --- instant snapshot (no smoothing) ---
         else:
@@ -68,7 +68,7 @@ class Snapshot:
             self.network_in = Server.getNetworkIn(rounding, gb)
             self.network_out = Server.getNetworkOut(rounding, gb)
             self.tps = Server.getTPS() if hasattr(Server, 'getTPS') else None
-            self.players = Server.getPlayers() if hasattr(Server, 'getPlayers') else None
+            self.players = Server.getPlayers('count')
 
         # uptime is static
         self.uptime = Server.getUptime()

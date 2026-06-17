@@ -1,4 +1,7 @@
 run: true
-version: '4.22'
+version: '4.23.dev1'
 description: |
-  - Added getMaxPlayers() method to MinecraftServer
+  - Added properties
+  - Rewrote some methods as properties
+  - Deleted dev branch (will use channels instead)
+  - Removed player smoothing

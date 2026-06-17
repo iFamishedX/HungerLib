@@ -34,6 +34,18 @@ class MinecraftServer(GenericServer):
         self.bridge = BridgeClient(bridge_url, bridge_token)
 
 
+    # basic information properties
+    @property
+    def bridge_version(self) -> str | None:
+        return self.bridge.getVersion()
+    @property
+    def version(self) -> str | None:
+        return self.bridge.getMinecraftVersion()
+    @property
+    def platform(self) -> str | None:
+        return self.bridge.getPlatform()
+
+
     def getPlayers(self, mode: str = 'count') -> int | list | None:
         '''Returns current online players'''
         if mode == 'count':
@@ -43,7 +55,15 @@ class MinecraftServer(GenericServer):
         else:
             raise InvalidModeError(f"Invalid mode: '{mode}'")
 
-    def getMaxPlayers(self) -> int:
+    @property
+    def player_count(self) -> int:
+        return self.getPlayers(mode='count') or 0
+    @property
+    def player_list(self) -> list[str]:
+        return self.getPlayers('list') or []
+
+    @property
+    def max_players(self) -> int:
         '''
         Runs the 'list' command and extracts the max player count.
         Expected format:
@@ -63,7 +83,11 @@ class MinecraftServer(GenericServer):
 
     def getTPS(self, mode: str = 'current', rounding: int = 3) -> float | None:
         '''
-        HungerBridge-native TPS getter
+        Returns TPS values:
+        - current:   EMA20
+        - 1m:        EMA1200
+        - 5m:        EMA6000
+        - tick_time: avg tick time (ms)
         '''
         try:
             value = self.bridge.getTPS(mode)
@@ -72,6 +96,11 @@ class MinecraftServer(GenericServer):
         if value is None:
             return None
         return round(value, rounding) if rounding is not None else value
+
+    @property
+    def tps(self) -> float | None:
+        return self.getTPS()
+
 
     # commands
     def sendConsoleCommand(
