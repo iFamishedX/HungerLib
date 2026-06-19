@@ -16,7 +16,7 @@ class MinecraftServer(GenericServer):
         server_id: str,
         server_domain: str,
         server_port: int,
-        bridge_port: int,
+        bridge_url: str,
         bridge_token: str,
     ):
         super().__init__(
@@ -30,7 +30,6 @@ class MinecraftServer(GenericServer):
         self.server_port = server_port
 
         # HungerBridge client
-        bridge_url = f'http://{server_domain}:{bridge_port}'
         self.bridge = BridgeClient(bridge_url, bridge_token)
 
 

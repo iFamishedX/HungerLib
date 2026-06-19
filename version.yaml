@@ -1,7 +1,4 @@
 run: true
-version: '4.23.dev1'
+version: '4.23.dev2'
 description: |
-  - Added properties
-  - Rewrote some methods as properties
-  - Deleted dev branch (will use channels instead)
-  - Removed player smoothing
+  - Updated MinecraftServer constructor to accept bridge_url instead of bridge_port
